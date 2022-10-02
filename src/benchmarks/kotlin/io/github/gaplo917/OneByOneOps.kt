@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono
 class OneByOneOps : BenchmarkFoundation() {
   @Param(value = ["2", "4", "8", "16", "32"]) lateinit var n: String
 
-  @Param(value = ["noOps", "ops"]) lateinit var opsModeParam: String
+  @Param(value = ["noOps", "ops"]) lateinit var opsMode: String
 
   override val ioDelay: Long = 0
 
@@ -23,7 +23,7 @@ class OneByOneOps : BenchmarkFoundation() {
 
   @Setup
   fun setup() {
-    mode = OpsMode.from(opsModeParam)
+    mode = OpsMode.from(opsMode)
   }
 
   @Benchmark

@@ -34,7 +34,7 @@ class ParallelCoroutineOps : BenchmarkFoundation() {
   )
   lateinit var threads: String
 
-  @Param(value = ["noOps", "ops"]) lateinit var opsModeParam: String
+  @Param(value = ["noOps", "ops"]) lateinit var opsMode: String
 
   private val delayDistribution = Array(1024) { index -> ((index + 256) * 100 / 256) / 100L }
 
@@ -51,7 +51,7 @@ class ParallelCoroutineOps : BenchmarkFoundation() {
 
   @Setup
   fun setup() {
-    mode = OpsMode.from(opsModeParam)
+    mode = OpsMode.from(opsMode)
     customCoroutineContext = newFixedThreadPoolContext(threads.toInt(), "coroutine-thread-pool")
   }
 

@@ -35,7 +35,7 @@ class ParallelReactorOps : BenchmarkFoundation() {
   )
   lateinit var threads: String
 
-  @Param(value = ["noOps", "ops"]) lateinit var opsModeParam: String
+  @Param(value = ["noOps", "ops"]) lateinit var opsMode: String
 
   override val ioDelay: Long = 5L
 
@@ -47,7 +47,7 @@ class ParallelReactorOps : BenchmarkFoundation() {
 
   @Setup
   fun setup() {
-    mode = OpsMode.from(opsModeParam)
+    mode = OpsMode.from(opsMode)
     customExecutor = Executors.newScheduledThreadPool(threads.toInt())
     customScheduler = Schedulers.fromExecutorService(customExecutor)
   }
