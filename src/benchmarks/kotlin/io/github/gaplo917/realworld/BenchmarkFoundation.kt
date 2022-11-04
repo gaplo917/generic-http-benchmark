@@ -1,6 +1,9 @@
-package io.github.gaplo917
+package io.github.gaplo917.realworld
 
-import java.time.Duration
+import io.github.gaplo917.helper.NonBlockingOps
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -8,7 +11,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Scheduler
+import java.util.concurrent.CountDownLatch
 
 @Serializable
 data class Data(val someInt: Int, val someMap: Map<String, String>, val someSet: Set<String>) {
@@ -46,9 +49,17 @@ enum class OpsMode {
   }
 }
 
-abstract class BenchmarkFoundation {
+abstract class BenchmarkFoundation: NonBlockingOps {
   abstract val mode: OpsMode
-  abstract val ioDelay: Long
+  override lateinit var controlledExecutor: ScheduledExecutorService
+
+  open fun setup() {
+    controlledExecutor = Executors.newSingleThreadScheduledExecutor()
+  }
+
+  open fun tearDown() {
+    controlledExecutor.shutdown()
+  }
 
   val basicData: BenchmarkType
     get() =
@@ -62,7 +73,7 @@ abstract class BenchmarkFoundation {
           )
       }
 
-  fun syncTask(dependency: BenchmarkType? = null): BenchmarkType {
+  fun syncOps(dependency: BenchmarkType? = null): BenchmarkType {
     return when (dependency) {
       null -> computational(basicData)
       else -> computational(ops(basicData, dependency))
@@ -88,75 +99,45 @@ abstract class BenchmarkFoundation {
     }
   }
 
-  suspend fun coroutineTaskSameScope(dependency: BenchmarkType? = null): BenchmarkType =
+  suspend fun coSameScopeAsyncCBTask(dependency: BenchmarkType? = null): BenchmarkType =
     coroutineScope {
-      delay(ioDelay)
-      when (dependency) {
-        null -> computational(basicData)
-        else -> computational(ops(basicData, dependency))
-      }
+      coAsyncCBTask(dependency)
     }
 
-  suspend fun coroutineTaskWithContext(
+  suspend fun coNewContextAsyncCBTask(
     context: CoroutineContext,
     dependency: BenchmarkType? = null
-  ): BenchmarkType =
-    withContext(context) {
-      delay(ioDelay)
-      when (dependency) {
-        null -> computational(basicData)
-        else -> computational(ops(basicData, dependency))
-      }
-    }
+  ): BenchmarkType = withContext(context) { coAsyncCBTask(dependency) }
 
-  suspend fun coroutineTaskLaunchGlobalScopeSameContext(
-    dependency: BenchmarkType? = null
-  ): BenchmarkType = suspendCoroutine {
-    GlobalScope.launch(it.context) {
-      delay(ioDelay)
-      when (dependency) {
-        null -> it.resume(computational(basicData))
-        else -> it.resume(computational(ops(basicData, dependency)))
-      }
-    }
-  }
-
-  suspend fun coroutineTaskLaunchGlobalScopeNewContext(
+  suspend fun coLaunchAsyncCBTask(
     context: CoroutineContext,
     dependency: BenchmarkType? = null
-  ): BenchmarkType = suspendCoroutine {
-    GlobalScope.launch(context) {
-      delay(ioDelay)
-      when (dependency) {
-        null -> it.resume(computational(basicData))
-        else -> it.resume(computational(ops(basicData, dependency)))
-      }
-    }
+  ): BenchmarkType = suspendCoroutine { cont ->
+    GlobalScope.launch(context) { asyncCBTask(dependency) { cont.resume(it) } }
   }
 
-  inline fun defaultReactorMonoTask(dependency: BenchmarkType? = null): Mono<BenchmarkType> {
+  suspend fun coAsyncCBTask(dependency: BenchmarkType? = null): BenchmarkType =
+    suspendCoroutine { cont ->
+      asyncCBTask(dependency) { cont.resume(it) }
+    }
+
+  inline fun customReactorMonoTask(dependency: BenchmarkType? = null): Mono<BenchmarkType> {
     // we cannot use Mono.just(..) here because the `computational` function will be run immediately
-    return Mono.create { observer ->
-        when (dependency) {
-          null -> observer.success(computational(basicData))
-          else -> observer.success(computational(ops(basicData, dependency)))
-        }
-      }
-      .delaySubscription(Duration.ofMillis(ioDelay))
+    return Mono.create { observer -> asyncCBTask(dependency) { observer.success(it) } }
   }
-  inline fun customReactorMonoTask(
+
+  inline fun asyncCBTask(
     dependency: BenchmarkType? = null,
-    scheduler: Scheduler
-  ): Mono<BenchmarkType> {
-    // we cannot use Mono.just(..) here because the `computational` function will be run immediately
-    return Mono.create { observer ->
-        when (dependency) {
-          null -> observer.success(computational(basicData))
-          else -> observer.success(computational(ops(basicData, dependency)))
-        }
+    crossinline cb: (BenchmarkType) -> Unit
+  ) {
+    if(ioDelay == 0L) {
+      cb(syncOps(dependency))
+    } else {
+      val runnable = Runnable {
+        cb(syncOps(dependency))
       }
-      .publishOn(scheduler)
-      .subscribeOn(scheduler)
-      .delaySubscription(Duration.ofMillis(ioDelay), scheduler)
+      controlledExecutor.schedule(runnable, ioDelay, TimeUnit.MILLISECONDS)
+    }
   }
+
 }
