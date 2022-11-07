@@ -17,7 +17,7 @@ class ParallelReactorOps : BenchmarkFoundation() {
       ]
   )
   lateinit var n: String
-  
+
   override val invocations: Int = 50000
 
   @Param(value = ["noOps", "ops"]) lateinit var opsModeParam: String
@@ -47,12 +47,12 @@ class ParallelReactorOps : BenchmarkFoundation() {
   }
 
   @Benchmark
-  fun _200_mono_zip() = parallelReactorBenchmark {
+  fun _200_mono_zip() = parallelReactorMonoInvocationBenchmark {
     monoZip(n.toInt())
   }
 
   @Benchmark
-  fun _300_mono_flux_merge_reduce() = parallelReactorBenchmark {
+  fun _300_mono_flux_merge_reduce() = parallelReactorMonoInvocationBenchmark {
     fluxMergeReduce(n.toInt())
   }
 

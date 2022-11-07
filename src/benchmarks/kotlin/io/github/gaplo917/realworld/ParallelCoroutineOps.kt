@@ -43,10 +43,10 @@ class ParallelCoroutineOps : BenchmarkFoundation() {
   }
 
   @Benchmark
-  fun _100_coroutine_imperative() = parallelCoBenchmark { coroutineImperative(n.toInt()) }
+  fun _100_coroutine_imperative() = parallelCoroutineInvocationBenchmark { coroutineImperative(n.toInt()) }
 
   @Benchmark
-  fun _110_coroutine_declarative() = parallelCoBenchmark { coroutineDeclarative(n.toInt()) }
+  fun _110_coroutine_declarative() = parallelCoroutineInvocationBenchmark { coroutineDeclarative(n.toInt()) }
 
   private suspend fun coroutineDeclarative(size: Int): BenchmarkType {
     return coroutineScope { Array(size) { async(Dispatchers.Unconfined) { coAsyncCBTask() } } }

@@ -488,3 +488,4 @@ hs_err_pid*
 .idea
 .gradle
 build
+.DS_Store

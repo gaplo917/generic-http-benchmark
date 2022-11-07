@@ -1,17 +1,17 @@
 package io.github.gaplo917.realworld
 
-import io.github.gaplo917.helper.NonBlockingOps
+import io.github.gaplo917.common.InvocationBenchmark
+import io.github.gaplo917.nonblocking.helper.NonBlockingOps
+import kotlinx.coroutines.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import reactor.core.publisher.Mono
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import kotlinx.coroutines.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import reactor.core.publisher.Mono
-import java.util.concurrent.CountDownLatch
 
 @Serializable
 data class Data(val someInt: Int, val someMap: Map<String, String>, val someSet: Set<String>) {
@@ -49,7 +49,7 @@ enum class OpsMode {
   }
 }
 
-abstract class BenchmarkFoundation: NonBlockingOps {
+abstract class BenchmarkFoundation: NonBlockingOps, InvocationBenchmark {
   abstract val mode: OpsMode
   override lateinit var controlledExecutor: ScheduledExecutorService
 

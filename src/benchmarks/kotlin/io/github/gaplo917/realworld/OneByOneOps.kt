@@ -1,11 +1,11 @@
 package io.github.gaplo917.realworld
 
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
 import reactor.core.publisher.Mono
+import kotlin.coroutines.EmptyCoroutineContext
 
 @State(Scope.Benchmark)
 @Threads(1)
