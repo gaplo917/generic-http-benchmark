@@ -22,7 +22,9 @@ tasks.test { useJUnitPlatform() }
 
 tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
 
-tasks.withType<JavaExec> { environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent") }
+tasks.withType<JavaExec> {
+  environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent")
+}
 
 application { mainClass.set("MainKt") }
 
