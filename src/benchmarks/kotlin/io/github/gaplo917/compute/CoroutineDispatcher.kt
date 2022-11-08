@@ -1,8 +1,9 @@
-package io.github.gaplo917.noops
+package io.github.gaplo917.compute
 
+import io.github.gaplo917.common.BenchmarkComputeMode
 import io.github.gaplo917.common.DispatcherParameterConversion
 import io.github.gaplo917.common.InvocationBenchmark
-import io.github.gaplo917.noops.helper.NoOps
+import io.github.gaplo917.compute.helper.ComputeOps
 import kotlinx.coroutines.*
 import kotlinx.coroutines.CoroutineDispatcher
 import org.openjdk.jmh.annotations.*
@@ -13,9 +14,15 @@ import org.openjdk.jmh.annotations.*
 // _001_parallel_coroutine_no_ops SingleThread  3494663.343 ops/s
 // _001_parallel_coroutine_no_ops    TwoThread  4008912.911 ops/s
 @State(Scope.Benchmark)
-@OperationsPerInvocation(500_000)
-class CoroutineDispatcher : NoOps, InvocationBenchmark, DispatcherParameterConversion {
-  override val invocations: Int = 500_000
+@OperationsPerInvocation(50_000)
+class CoroutineDispatcher : ComputeOps, InvocationBenchmark, DispatcherParameterConversion {
+  override val invocations: Int = 50_000
+
+  @Param(value = ["no_compute", "compute"]) lateinit var computeMode: String
+
+  override val benchmarkComputeMode: BenchmarkComputeMode by lazy {
+    BenchmarkComputeMode.from(computeMode)
+  }
 
   @Param(value = ["Unconfined", "IO", "Default", "SingleThread", "TwoThread"])
   lateinit var dispatcher: String
@@ -28,6 +35,6 @@ class CoroutineDispatcher : NoOps, InvocationBenchmark, DispatcherParameterConve
   }
 
   @Benchmark
-  fun _001_parallel_coroutine_no_ops() =
-    parallelCoroutineInvocationBenchmark(coroutineDispatcher) { noOps() }
+  fun _001_parallel_coroutine_compute_ops() =
+    parallelCoroutineInvocationBenchmark(coroutineDispatcher) { computeOps() }
 }

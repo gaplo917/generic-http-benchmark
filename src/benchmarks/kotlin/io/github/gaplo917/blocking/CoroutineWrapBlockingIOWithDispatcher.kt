@@ -1,6 +1,7 @@
 package io.github.gaplo917.blocking
 
 import io.github.gaplo917.blocking.helper.BlockingOps
+import io.github.gaplo917.common.BenchmarkComputeMode
 import io.github.gaplo917.common.DispatcherParameterConversion
 import io.github.gaplo917.common.InvocationBenchmark
 import kotlin.coroutines.resume
@@ -8,12 +9,18 @@ import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.*
 import org.openjdk.jmh.annotations.*
 
-// _001_suspendCoroutine_wrap_blocking_io   Unconfined    246.991 ops/s
-// _001_suspendCoroutine_wrap_blocking_io           IO  14629.352 ops/s
-// _001_suspendCoroutine_wrap_blocking_io      Default   2555.047 ops/s
-// _002_withContext_wrap_blocking_io        Unconfined    245.590 ops/s
-// _002_withContext_wrap_blocking_io                IO  14906.389 ops/s
-// _002_withContext_wrap_blocking_io           Default   2415.895 ops/s
+// _001_suspendCoroutine_wrap_blocking_io  no_compute  Unconfined    249.961 ops/s
+// _001_suspendCoroutine_wrap_blocking_io  no_compute          IO  14886.661 ops/s
+// _001_suspendCoroutine_wrap_blocking_io  no_compute     Default   2501.006 ops/s
+// _001_suspendCoroutine_wrap_blocking_io     compute  Unconfined    237.456 ops/s
+// _001_suspendCoroutine_wrap_blocking_io     compute          IO  14469.598 ops/s
+// _001_suspendCoroutine_wrap_blocking_io     compute     Default   2428.850 ops/s
+// _002_withContext_wrap_blocking_io       no_compute  Unconfined    247.716 ops/s
+// _002_withContext_wrap_blocking_io       no_compute          IO  14619.053 ops/s
+// _002_withContext_wrap_blocking_io       no_compute     Default   2609.658 ops/s
+// _002_withContext_wrap_blocking_io          compute  Unconfined    235.293 ops/s
+// _002_withContext_wrap_blocking_io          compute          IO  14496.140 ops/s
+// _002_withContext_wrap_blocking_io          compute     Default   2534.807 ops/s
 @State(Scope.Benchmark)
 @OperationsPerInvocation(300)
 class CoroutineWrapBlockingIOWithDispatcher :
@@ -23,8 +30,13 @@ class CoroutineWrapBlockingIOWithDispatcher :
 
   override val invocations: Int = 300
 
-  @Param(value = ["Unconfined", "IO", "Default"]) lateinit var dispatcher: String
+  @Param(value = ["no_compute", "compute"]) lateinit var computeMode: String
 
+  override val benchmarkComputeMode: BenchmarkComputeMode by lazy {
+    BenchmarkComputeMode.from(computeMode)
+  }
+
+  @Param(value = ["Unconfined", "IO", "Default"]) lateinit var dispatcher: String
   lateinit var coroutineDispatcher: CoroutineDispatcher
 
   @Setup

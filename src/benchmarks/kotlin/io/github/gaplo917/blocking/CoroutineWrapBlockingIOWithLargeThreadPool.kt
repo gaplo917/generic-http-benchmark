@@ -1,22 +1,35 @@
 package io.github.gaplo917.blocking
 
 import io.github.gaplo917.blocking.helper.BlockingOps
+import io.github.gaplo917.common.BenchmarkComputeMode
 import io.github.gaplo917.common.InvocationBenchmark
 import kotlinx.coroutines.*
 import org.openjdk.jmh.annotations.*
 
-// _000_withContext_wrap_blocking_io_custom_thread_pool   100   24986.589 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   200   52647.982 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   300   79475.491 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   400  106513.655 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   500  125844.288 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   600   93626.857 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   700   72438.499 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   800   55050.167 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool   900   50290.195 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool  1000   42041.801 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool  2500   15486.241 ops/s
-// _000_withContext_wrap_blocking_io_custom_thread_pool  5000    8380.684 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  100   24013.245 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  200   51402.867 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  300   79086.174 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  400  106488.599 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  500  126859.570 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  600   88785.835 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  700   78829.045 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  800   56193.950 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute  900   63302.611 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute 1000   39562.443 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute 2500   15242.552 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool  no_compute 5000    8231.099 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  100   23928.841 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  200   51254.746 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  300   78278.899 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  400  100709.397 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  500   83281.199 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  600   69856.135 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  700   58477.238 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  800   44493.068 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute  900   40105.497 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute 1000   39130.378 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute 2500   15629.212 ops/s
+// _000_withContext_wrap_blocking_io_custom_thread_pool     compute 5000    8361.032 ops/s
 @State(Scope.Benchmark)
 @OperationsPerInvocation(50000)
 class CoroutineWrapBlockingIOWithLargeThreadPool : BlockingOps, InvocationBenchmark {
@@ -24,6 +37,12 @@ class CoroutineWrapBlockingIOWithLargeThreadPool : BlockingOps, InvocationBenchm
   override val ioDelay: Long = 3
 
   override val invocations: Int = 50000
+
+  @Param(value = ["no_compute", "compute"]) lateinit var computeMode: String
+
+  override val benchmarkComputeMode: BenchmarkComputeMode by lazy {
+    BenchmarkComputeMode.from(computeMode)
+  }
 
   lateinit var coroutineDispatcher: CoroutineDispatcher
 

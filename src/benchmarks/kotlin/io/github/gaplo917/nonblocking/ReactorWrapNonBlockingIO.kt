@@ -1,5 +1,6 @@
 package io.github.gaplo917.nonblocking
 
+import io.github.gaplo917.common.BenchmarkComputeMode
 import io.github.gaplo917.common.InvocationBenchmark
 import io.github.gaplo917.nonblocking.helper.NonBlockingOps
 import io.netty.channel.nio.NioEventLoopGroup
@@ -9,11 +10,14 @@ import org.openjdk.jmh.annotations.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-//
-// _000_parallel_no_wrap_callback                    3008131.465 ops/s
-// _001_parallel_mono_create_wrap_callback           3203924.399 ops/s
-// _002_parallel_mono_defer_and_create_wrap_callback 3045708.922 ops/s
-// _003_parallel_flux_create_wrap_callback           2662122.935 ops/s
+// _000_parallel_no_wrap_callback                    no_compute 2890949.315 ops/s
+// _000_parallel_no_wrap_callback                       compute  261317.446 ops/s
+// _001_parallel_mono_create_wrap_callback           no_compute 3326912.503 ops/s
+// _001_parallel_mono_create_wrap_callback              compute  269650.945 ops/s
+// _002_parallel_mono_defer_and_create_wrap_callback no_compute 3019475.518 ops/s
+// _002_parallel_mono_defer_and_create_wrap_callback    compute  270232.089 ops/s
+// _003_parallel_flux_create_wrap_callback           no_compute 2518142.790 ops/s
+// _003_parallel_flux_create_wrap_callback              compute  248414.511 ops/s
 @State(Scope.Benchmark)
 @OperationsPerInvocation(500_000)
 class ReactorWrapNonBlockingIO : NonBlockingOps, InvocationBenchmark {
@@ -22,6 +26,12 @@ class ReactorWrapNonBlockingIO : NonBlockingOps, InvocationBenchmark {
   override val ioDelay: Long = 3
 
   override val invocations: Int = 500_000
+
+  @Param(value = ["no_compute", "compute"]) lateinit var computeMode: String
+
+  override val benchmarkComputeMode: BenchmarkComputeMode by lazy {
+    BenchmarkComputeMode.from(computeMode)
+  }
 
   @Setup
   fun setup() {
