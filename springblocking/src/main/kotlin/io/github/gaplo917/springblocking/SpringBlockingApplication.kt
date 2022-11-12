@@ -62,7 +62,7 @@ class BenchmarkController {
     }
 
     @RequestMapping("/blocking-virtual-thread/{ioDelay}")
-    suspend fun blockingNativeVirtualThreadApi(@PathVariable ioDelay: Long): ResponseEntity<DummyResponse> {
+    fun blockingNativeVirtualThreadApi(@PathVariable ioDelay: Long): ResponseEntity<DummyResponse> {
         val resp = StructuredTaskScope.ShutdownOnFailure().use { scope ->
             val future = scope.fork { blockingIO(ioDelay) }
             scope.join()

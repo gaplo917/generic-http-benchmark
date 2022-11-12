@@ -53,25 +53,22 @@ kotlin {
 benchmark {
   configurations {
     getByName("main") {
-//      // cleanest compute ops benchmark
-//      include("SequentialChainComputeOps")
-//      include("CoroutineDispatcher")
-//      include("CoroutineWrapComputeOps")
-//      include("ReactorScheduler")
-//      include("ReactorWrapComputeOps")
-//
-//      // cleanest non-blocking callback wrapper benchmark
-      include("CoroutineWrapNonBlockingIO")
-//      include("ReactorWrapNonBlockingIO")
-//
-//      // cleanest blocking wrapper benchmark
-//      include("CoroutineWrapBlockingIOWithDispatcher")
-//      include("CoroutineWrapBlockingIOWithJava19VirtualThread")
-//      include("CoroutineWrapBlockingIOWithLargeThreadPool")
-//      include("Java19VirtualThreadWrapBlockingIO")
+      // cleanest compute ops benchmark
+      include("SequentialChainComputeOps")
+      include("CoroutineDispatcher")
+      include("CoroutineWrapComputeOps")
+      include("ReactorScheduler")
+      include("ReactorWrapComputeOps")
 
-      // spring boot
-//      include("SpringBootMVCBenchmark")
+      // cleanest non-blocking callback wrapper benchmark
+      include("CoroutineWrapNonBlockingIO")
+      include("ReactorWrapNonBlockingIO")
+
+      // cleanest blocking wrapper benchmark
+      include("CoroutineWrapBlockingIOWithDispatcher")
+      include("CoroutineWrapBlockingIOWithJava19VirtualThread")
+      include("CoroutineWrapBlockingIOWithLargeThreadPool")
+      include("Java19VirtualThreadWrapBlockingIO")
 
       warmups = 2 // number of warmup iterations
       iterations = 2 // number of iterations
