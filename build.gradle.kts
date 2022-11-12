@@ -20,7 +20,7 @@ dependencies { testImplementation(kotlin("test")) }
 
 tasks.test { useJUnitPlatform() }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
+tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "19" }
 
 tasks.withType<JavaExec> {
   environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent")
@@ -28,7 +28,9 @@ tasks.withType<JavaExec> {
 
 application { mainClass.set("MainKt") }
 
-sourceSets { create("benchmarks") { java.srcDir("src/benchmarks/kotlin") } }
+sourceSets {
+  create("benchmarks") { java.srcDir("src/benchmarks/kotlin") }
+}
 
 kotlin {
   jvmToolchain { languageVersion.set(JavaLanguageVersion.of(19)) }
@@ -51,26 +53,29 @@ kotlin {
 benchmark {
   configurations {
     getByName("main") {
-      // cleanest compute ops benchmark
-      include("SequentialChainComputeOps")
-      include("CoroutineDispatcher")
-      include("CoroutineWrapComputeOps")
-      include("ReactorScheduler")
-      include("ReactorWrapComputeOps")
-
-      // cleanest non-blocking callback wrapper benchmark
+//      // cleanest compute ops benchmark
+//      include("SequentialChainComputeOps")
+//      include("CoroutineDispatcher")
+//      include("CoroutineWrapComputeOps")
+//      include("ReactorScheduler")
+//      include("ReactorWrapComputeOps")
+//
+//      // cleanest non-blocking callback wrapper benchmark
       include("CoroutineWrapNonBlockingIO")
-      include("ReactorWrapNonBlockingIO")
+//      include("ReactorWrapNonBlockingIO")
+//
+//      // cleanest blocking wrapper benchmark
+//      include("CoroutineWrapBlockingIOWithDispatcher")
+//      include("CoroutineWrapBlockingIOWithJava19VirtualThread")
+//      include("CoroutineWrapBlockingIOWithLargeThreadPool")
+//      include("Java19VirtualThreadWrapBlockingIO")
 
-      // cleanest blocking wrapper benchmark
-      include("CoroutineWrapBlockingIOWithDispatcher")
-      include("CoroutineWrapBlockingIOWithJava19VirtualThread")
-      include("CoroutineWrapBlockingIOWithLargeThreadPool")
-      include("Java19VirtualThreadWrapBlockingIO")
+      // spring boot
+//      include("SpringBootMVCBenchmark")
 
       warmups = 2 // number of warmup iterations
       iterations = 2 // number of iterations
-      iterationTime = 500 // time in seconds per iteration
+      iterationTime = 1000 // time in seconds per iteration
       iterationTimeUnit = "ms"
     }
   }

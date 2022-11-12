@@ -40,6 +40,7 @@ class CoroutineWrapComputeOps : ComputeOps, InvocationBenchmark {
   @Benchmark
   fun _001_parallel_suspendCoroutine_wrap_compute_ops() =
     parallelCoroutineInvocationBenchmark(Dispatchers.Default) {
+      runBlocking {  }
       suspendCoroutine { it.resume(computeOps()) }
     }
 

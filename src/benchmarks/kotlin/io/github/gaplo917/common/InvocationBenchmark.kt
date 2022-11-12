@@ -5,6 +5,8 @@ import java.util.concurrent.CountDownLatch
 import kotlinx.coroutines.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /** Implement a control for blocking and non-blocking invocation benchmark */
 interface InvocationBenchmark {

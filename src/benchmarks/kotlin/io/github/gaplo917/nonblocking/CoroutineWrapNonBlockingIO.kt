@@ -47,21 +47,62 @@ class CoroutineWrapNonBlockingIO : NonBlockingOps, InvocationBenchmark {
   fun _000_parallel_no_wrap_callback() = parallelCallbackInvocationBenchmark(::nonBlockingCallback)
 
   @Benchmark
-  fun _001_parallel_suspendCoroutine_wrap_callback() = parallelCoroutineInvocationBenchmark {
+  fun _001_parallel_suspendCoroutine_unconfined_wrap_callback() = parallelCoroutineInvocationBenchmark(Dispatchers.Unconfined) {
     suspendCoroutine { nonBlockingCallback { it.resume(Unit) } }
   }
 
   @Benchmark
-  fun _002_parallel_suspendCancellableCoroutine_wrap_callback() =
-    parallelCoroutineInvocationBenchmark {
-      suspendCancellableCoroutine { nonBlockingCallback { it.resume(Unit) } }
+  fun _002_parallel_suspendCoroutine_default_wrap_callback() = parallelCoroutineInvocationBenchmark(Dispatchers.Default) {
+    suspendCoroutine { nonBlockingCallback { it.resume(Unit) } }
+  }
+
+  @Benchmark
+  fun _003_parallel_suspendCoroutine_unconfined_global_launch_empty_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Unconfined) {
+      suspendCoroutine {
+        GlobalScope.launch { nonBlockingCallback { it.resume(Unit) } }
+      }
     }
 
   @Benchmark
-  fun _003_parallel_suspendCoroutine_global_launch_wrap_callback() =
-    parallelCoroutineInvocationBenchmark {
+  fun _003_parallel_suspendCoroutine_unconfined_global_launch_default_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Unconfined) {
+      suspendCoroutine {
+        GlobalScope.launch(Dispatchers.Default) { nonBlockingCallback { it.resume(Unit) } }
+      }
+    }
+
+  @Benchmark
+  fun _003_parallel_suspendCoroutine_unconfined_global_launch_io_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Unconfined) {
+      suspendCoroutine {
+        GlobalScope.launch(Dispatchers.IO) { nonBlockingCallback { it.resume(Unit) } }
+      }
+    }
+
+  @Benchmark
+  fun _004_parallel_suspendCoroutine_default_global_launch_empty_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Default) {
+      suspendCoroutine {
+        GlobalScope.launch { nonBlockingCallback { it.resume(Unit) } }
+      }
+    }
+
+  @Benchmark
+  fun _005_parallel_suspendCoroutine_default_global_launch_io_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Default) {
+      suspendCoroutine {
+        GlobalScope.launch(Dispatchers.IO) { nonBlockingCallback { it.resume(Unit) } }
+      }
+    }
+
+  @Benchmark
+  fun _006_parallel_suspendCoroutine_default_global_launch_unconfined_wrap_callback() =
+    parallelCoroutineInvocationBenchmark(Dispatchers.Default) {
       suspendCoroutine {
         GlobalScope.launch(Dispatchers.Unconfined) { nonBlockingCallback { it.resume(Unit) } }
       }
     }
+
+
 }
