@@ -58,6 +58,29 @@ e.g. Wrapping `Thread.sleep(..)` into virtual threads to simulate JDBC IO V.S. `
 - WIP: What is the performance of context switching and scheduling in Kotlin Coroutine, Reactor,
   and java virtual threads?
 
+## Getting Started (JMH)
+
+```bash
+
+# Run JMH benchmark
+./gradlew jmh:mainBenchmark
+
+```
+
+## Getting Started (end-to-end Spring)
+
+```bash
+# Build Spring MVC Docker image
+./gradlew springmvc:jibDockerBuild
+
+# Build Spring WebFlux Docker Image
+./gradlew springwebflux:jibDockerBuild
+
+# Start the containers
+docker compose up
+
+
+```
 
 ## Benchmark Environment
 WIP

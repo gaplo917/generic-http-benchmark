@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  spring-webflux-benchmark:
+    container_name: spring-webflux-benchmark
+    image: spring-webflux-benchmark:latest
+    ports:
+      - '8080:8080'
+  spring-mvc-benchmark:
+    container_name: spring-mvc-benchmark
+    image: spring-mvc-benchmark:latest
+    ports:
+      - '8081:8080'
