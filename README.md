@@ -1,62 +1,49 @@
 ## Deep Dive the Real-World Performance of Kotlin Coroutine (V.S. Reactor, Java Virtual Threads)
 
-As all we know, Kotlin Coroutine has provided us a good way to structure our asynchronous codes 
-in a readable sequence and it is also theoretically more CPU-friendly that reduces unnecessary context 
-switching to run faster and allow the CPU to work more. However, theory is just the texts on paper, 
+As all we know, Kotlin Coroutine has provided us a good way to structure our asynchronous codes
+in a readable sequence. It is also theoretically more CPU-friendly that reduces unnecessary context
+switching to run faster and allow the CPU to work more. However, theory is just the texts on paper,
 developers need real world scenarios and performance metrics to make better decisions.
+
+> When we talk about "Real World Performance", we should measure both **machines** and **developers**.
 
 I believe the following questions popped up in my mind will also in yours:
 
-- How fast is Kotlin Coroutine compared to other popular asynchronous solutions?
+In machine world,
+
+- How fast is Kotlin Coroutine compared to other popular asynchronous solutions in machine?
 
 - What are the performance differences if I misused Kotlin coroutine?
 
-- What are the performance differences when the implementation runs heavy-IO and serialization operations?
+- What are the performance differences when the application runs heavy-blocking-IO or
+  heavy-non-blocking-IO operations?
 
-- What are the performance differences when I switched to Kotlin Coroutine in Spring Boot?
+- What are the performance differences when I switched to Kotlin Coroutine in Spring Boot MVC?
 
 - Hardware is cheap and eventually will be cheaper in the future, why should I consider Kotlin Coroutine?
 
-This is a technical talk to deep dive the performance differences on Kotlin Coroutine, 
+In developer world,
+
+- What are the learning curve of writing performant codes in Kotlin Coroutine compared to Java Reactor?
+
+- What changes required to apply Kotlin Coroutine into existing Spring Boot project?
+
+- Java virtual threads and Structured Concurrency feature are coming to future Java, why should I consider Kotlin Coroutine?
+
+This is a technical talk to deep dive the performance differences on Kotlin Coroutine,
 Java virtual threads, and Reactor backed by a list of JMH benchmarks on the JVM to answer those questions.
 
-
 ## Objective
-This benchmark is to show the performance of using java virtual threads, 
-kotlin coroutine, and reactor on practical scenarios.
 
-Variables:
+This benchmark is to show the performance of using Kotlin Coroutine, Reactor, and
+Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
 
-n - number of operations
-
-threads - numbers of threads available in the thread pool size
-
-opsMode - `noOps` | `Ops`, `noOps` is the baseline when there are no IO task and no serialization task while `ops` is the
-real-world non-blocking IO operations and serialization operations.
-
-Expected questions answered by the benchmark:
-
-- What is the performance of running `n` **synchronous codes without any computational operations**
-in synchronous function, suspend function with different coroutine contexts, and Reactor?
-
-- What is the performance of running `n` **computational operations** 
-in synchronous function, suspend function with different coroutine contexts, and Reactor?
-
-- What is the performance of running `n` parallel **1-4ms IO operations 
-followed by a JSON serialization and Map-merging operations** in suspend function, and Reactor
-with different `threads`?
-
-- What is the performance difference between `coroutineScope`, `withContext(Dispatchers.XXX)`, and `GlobalScope.launch`
-  to wrap non-blocking IO call?
-
-- WIP: What is the performance difference of wrapping blocking IO in java virtual threads (JDK 19) 
-in Kotlin coroutine and Reactor versus using non-blocking IO directly? 
-e.g. Wrapping `Thread.sleep(..)` into virtual threads to simulate JDBC IO V.S. `delay(..)` to simulate R2DBC IO
-
-- WIP: What is the performance of java virtual threads compared to Kotlin coroutine and Reactor.
-
-- WIP: What is the performance of context switching and scheduling in Kotlin Coroutine, Reactor,
-  and java virtual threads?
+1. Find out the performance differences between the Reactor and Kotlin Coroutine.
+2. Find out the performance differences when handling blocking IO and non-blocking IO.
+3. Find out the performance differences in the future state of JVM (combined Kotlin Coroutine and Reactor with JDK 19 virtual threads)
+4. Find out the cost of context switching and scheduling in Kotlin Coroutine, Reactor, and java virtual threads.
+5. Compare the JVM-based(ktor, spring boot, vert.x) Http server performances in heavy non-blocking IO
+6. Compare with nodejs and Go Http server performances in heavy non-blocking IO
 
 ## Getting Started (JMH)
 
@@ -73,22 +60,33 @@ e.g. Wrapping `Thread.sleep(..)` into virtual threads to simulate JDBC IO V.S. `
 # Build Spring MVC Docker image
 ./gradlew springmvc:jibDockerBuild
 
-# Build Spring WebFlux Docker Image
+# Build Spring WebFlux Docker image
 ./gradlew springwebflux:jibDockerBuild
+
+# Build Ktor Docker image
+./gradlew ktor:jibDockerBuild
 
 # Start the containers
 docker compose up
 
-
+# Start end to end benchmark
+./gradlew gatling:gatlingRun
 ```
 
+Go to http://localhost:3000 to configure the grafana dashboard.
+
 ## Benchmark Environment
+
 WIP
 
 ## Benchmark Result
+
 WIP
 
 ## Conclusion
+
 WIP
 
+## Troubleshooting
 
+Gatling too many open files on Mac: https://stackoverflow.com/questions/33836092/too-many-open-files-when-executing-gatling-on-mac

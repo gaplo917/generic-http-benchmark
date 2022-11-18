@@ -1,0 +1,32 @@
+global:
+  # How frequently to scrape targets by default.
+  scrape_interval: 5s
+
+# A list of scrape configurations.
+scrape_configs:
+  # The job name assigned to scraped metrics by default.
+  - job_name: spring-mvc
+
+    # The HTTP resource path on which to fetch metrics from targets.
+    metrics_path: "/actuator/prometheus"
+
+    static_configs:
+      - targets: [ 'spring-mvc-benchmark:8080' ]
+  - job_name: spring-webflux
+    # The HTTP resource path on which to fetch metrics from targets.
+    metrics_path: "/actuator/prometheus"
+
+    static_configs:
+      - targets: [ 'spring-webflux-benchmark:8080' ]
+  - job_name: ktor
+    # The HTTP resource path on which to fetch metrics from targets.
+    metrics_path: "/metrics-micrometer"
+
+    static_configs:
+      - targets: [ 'ktor-benchmark:8080' ]
+  - job_name: nestjs
+    # The HTTP resource path on which to fetch metrics from targets.
+    metrics_path: "/metrics"
+
+    static_configs:
+      - targets: [ 'nestjs-benchmark:8080' ]

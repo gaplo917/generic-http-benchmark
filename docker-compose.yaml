@@ -1,12 +1,77 @@
-version: '3.1'
+version: '3.9'
 services:
   spring-webflux-benchmark:
     container_name: spring-webflux-benchmark
     image: spring-webflux-benchmark:latest
     ports:
       - '8080:8080'
+    platform: linux/arm64/v8
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 4G
   spring-mvc-benchmark:
     container_name: spring-mvc-benchmark
     image: spring-mvc-benchmark:latest
     ports:
       - '8081:8080'
+    platform: linux/arm64/v8
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 4G
+  ktor-benchmark:
+    container_name: ktor-benchmark
+    image: ktor-benchmark:latest
+    ports:
+      - '8082:8080'
+    platform: linux/arm64/v8
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 4G
+  nestjs-benchmark:
+    container_name: nestjs-benchmark
+    build: nestjs/
+    ports:
+      - '8083:8080'
+    platform: linux/arm64/v8
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 4G
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    links:
+      - spring-mvc-benchmark
+      - spring-webflux-benchmark
+      - ktor-benchmark
+      - nestjs-benchmark
+    ports:
+      - '9090:9090'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+  grafana:
+    container_name: grafana
+    volumes:
+      - ./docker-cache/grafana:/var/lib/grafana
+    image: grafana/grafana
+    links:
+      - prometheus
+    ports:
+      - '3000:3000'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G

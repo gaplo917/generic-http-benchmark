@@ -1,10 +1,10 @@
-
 rootProject.name = "kotlin-coroutine-benchmark"
 
 include("springmvc")
 include("springwebflux")
 include("jmh")
-
+include("gatling")
+include("ktor")
 
 pluginManagement {
     plugins {
@@ -16,7 +16,7 @@ pluginManagement {
         id("org.springframework.boot") version "2.7.5"
         id("io.spring.dependency-management") version "1.1.0"
         kotlin("plugin.spring") version "1.7.20"
-        id ("com.google.cloud.tools.jib") version "3.3.1"
+        id("com.google.cloud.tools.jib") version "3.3.1"
     }
 }
 
