@@ -8,7 +8,8 @@ data class DummyResponse(
   val threadGroupCount: Int?
 ) {
   companion object {
-    fun dummy(thread: Thread? = null /* Thread.currentThread() */): DummyResponse {
+    @JvmStatic
+    fun dummy(thread: Thread? = null): DummyResponse {
       return DummyResponse(
         name = thread?.name,
         isActive = thread?.isAlive,

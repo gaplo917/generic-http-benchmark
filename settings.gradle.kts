@@ -7,13 +7,17 @@ include("gatling")
 include("ktor")
 
 pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.spring.io/milestone") }
+        gradlePluginPortal()
+    }
     plugins {
         id("kotlin") version "1.7.20"
         id("org.jetbrains.kotlinx.benchmark") version "0.4.4"
         id("org.jetbrains.kotlin.plugin.allopen") version "1.7.20"
         id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
 
-        id("org.springframework.boot") version "2.7.5"
+        id("org.springframework.boot") version "3.0.0-RC2"
         id("io.spring.dependency-management") version "1.1.0"
         kotlin("plugin.spring") version "1.7.20"
         id("com.google.cloud.tools.jib") version "3.3.1"

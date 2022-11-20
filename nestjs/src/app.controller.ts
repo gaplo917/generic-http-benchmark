@@ -25,7 +25,7 @@ export class AppController {
     });
   }
 
-  @Get('/nestjs-non-blocking/:ioDelay')
+  @Get('/nestjs-nio/:ioDelay')
   async nonBlockingApi(
     @Param('ioDelay') ioDelay: number,
   ): Promise<Array<DummyResponse>> {

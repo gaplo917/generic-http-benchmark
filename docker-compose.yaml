@@ -1,49 +1,75 @@
 version: '3.9'
+networks:
+  default:
+    name: kotlin-coroutine-benchmark-network
+    driver: bridge
 services:
   spring-webflux-benchmark:
     container_name: spring-webflux-benchmark
     image: spring-webflux-benchmark:latest
     ports:
       - '8080:8080'
-    platform: linux/arm64/v8
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 4G
+          cpus: '2.0'
+          memory: 6G
   spring-mvc-benchmark:
     container_name: spring-mvc-benchmark
     image: spring-mvc-benchmark:latest
     ports:
       - '8081:8080'
-    platform: linux/arm64/v8
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 4G
+          cpus: '2.0'
+          memory: 6G
+    environment:
+      - SERVER_TOMCAT_THREADS_MAX=200
+  spring-mvc-2k-benchmark:
+    container_name: spring-mvc-2k-benchmark
+    image: spring-mvc-benchmark:latest
+    ports:
+      - '8082:8080'
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 6G
+    environment:
+      - SERVER_TOMCAT_THREADS_MAX=2000
+  spring-mvc-vt-benchmark:
+    container_name: spring-mvc-vt-benchmark
+    image: spring-mvc-benchmark:latest
+    ports:
+      - '8083:8080'
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 6G
+    environment:
+      - ENABLE_VIRTUAL_THREAD=true
   ktor-benchmark:
     container_name: ktor-benchmark
     image: ktor-benchmark:latest
     ports:
-      - '8082:8080'
-    platform: linux/arm64/v8
+      - '8084:8080'
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 4G
+          cpus: '2.0'
+          memory: 6G
   nestjs-benchmark:
     container_name: nestjs-benchmark
     build: nestjs/
     ports:
-      - '8083:8080'
-    platform: linux/arm64/v8
+      - '8085:8080'
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 4G
+          cpus: '2.0'
+          memory: 6G
   prometheus:
     container_name: prometheus
     image: prom/prometheus

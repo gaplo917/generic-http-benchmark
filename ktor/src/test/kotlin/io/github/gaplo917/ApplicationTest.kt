@@ -1,4 +1,4 @@
-package gaplo917.github.io
+package io.github.gaplo917
 
 import io.ktor.server.routing.*
 import io.ktor.http.*
@@ -14,17 +14,18 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlin.test.*
 import io.ktor.server.testing.*
-import gaplo917.github.io.plugins.*
+import io.github.gaplo917.ktor.plugins.*
 
 class ApplicationTest {
     @Test
     fun testRoot() = testApplication {
         application {
+            configureMonitoring()
+            configureSerialization()
             configureRouting()
         }
-        client.get("/").apply {
+        client.get("ktor-nio/0").apply {
             assertEquals(HttpStatusCode.OK, status)
-            assertEquals("Hello World!", bodyAsText())
         }
     }
 }

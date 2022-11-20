@@ -1,0 +1,76 @@
+version: '3.9'
+networks:
+  default:
+    name: kotlin-coroutine-benchmark-network
+    external: true
+services:
+  gatling-runner:
+    container_name: gatling-runner
+    build: gatling/
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+    volumes:
+      - ./docker-cache/gatling-runner/.gradle:/usr/src/app/.gradle
+      - ./docker-cache/gatling-runner/build:/usr/src/app/build
+    environment:
+      - BENCHMARK_REQUEST_TIMEOUT=60
+      ################ Quick Test CONF #############
+      #- BENCHMARK_COOL_DOWN_DURATION=0
+      #- BENCHMARK_WARM_UP_DURATION=5
+      #- BENCHMARK_RAMP_UP_DURATION=5
+      #- BENCHMARK_SUSTAIN_PEAK_DURATION=10
+      ################ PROD CONF #############
+      - BENCHMARK_COOL_DOWN_DURATION=10
+      - BENCHMARK_WARM_UP_DURATION=10
+      - BENCHMARK_RAMP_UP_DURATION=10
+      - BENCHMARK_SUSTAIN_PEAK_DURATION=30
+      ################# Benchmark Scenarios #####################
+      ################# Blocking V.S Non-Blocking #################
+      - BENCHMARK_SCENARIOS_0=50,100,200|0ms-mvc-bio|http://spring-mvc-benchmark:8080/mvc-bio/0
+      - BENCHMARK_SCENARIOS_1=2000,4000,8000|50ms-mvc-bio|http://spring-mvc-benchmark:8080/mvc-bio/25
+      - BENCHMARK_SCENARIOS_2=2000,4000,8000|100ms-mvc-bio|http://spring-mvc-benchmark:8080/mvc-bio/50
+      - BENCHMARK_SCENARIOS_3=2000,4000,8000|200ms-mvc-bio|http://spring-mvc-benchmark:8080/mvc-bio/100
+      - BENCHMARK_SCENARIOS_10=50,100,200|0ms-webflux-nio-reactor|http://spring-webflux-benchmark:8080/webflux-nio-reactor/0
+      - BENCHMARK_SCENARIOS_11=2000,4000,8000|50ms-webflux-nio-reactor|http://spring-webflux-benchmark:8080/webflux-nio-reactor/25
+      - BENCHMARK_SCENARIOS_12=2000,4000,8000|100ms-webflux-nio-reactor|http://spring-webflux-benchmark:8080/webflux-nio-reactor/50
+      - BENCHMARK_SCENARIOS_13=2000,4000,8000|200ms-webflux-nio-reactor|http://spring-webflux-benchmark:8080/webflux-nio-reactor/100
+      ################## Adding More threads to Spring MVC ###################
+      - BENCHMARK_SCENARIOS_40=50,100,200|0ms-mvc-2k-bio|http://spring-mvc-2k-benchmark:8080/mvc-bio/0
+      - BENCHMARK_SCENARIOS_41=2000,4000,8000|50ms-mvc-2k-bio|http://spring-mvc-2k-benchmark:8080/mvc-bio/25
+      - BENCHMARK_SCENARIOS_42=2000,4000,8000|100ms-mvc-2k-bio|http://spring-mvc-2k-benchmark:8080/mvc-bio/50
+      - BENCHMARK_SCENARIOS_43=2000,4000,8000|200ms-mvc-2k-bio|http://spring-mvc-2k-benchmark:8080/mvc-bio/100
+      #################### MVC Non Blocking IO ############################
+      - BENCHMARK_SCENARIOS_50=8000|200ms-mvc-nio-future|http://spring-mvc-benchmark:8080/mvc-nio-future/100
+      ################## Coroutine + Non Blocking IO ######################
+      - BENCHMARK_SCENARIOS_61=8000|200ms-mvc-nio-coroutine|http://spring-mvc-benchmark:8080/mvc-nio-coroutine/100
+      - BENCHMARK_SCENARIOS_62=8000|200ms-webflux-nio-coroutine|http://spring-webflux-benchmark:8080/webflux-nio-coroutine/100
+      #################### JVM is fast, compare with other languages ####################
+      - BENCHMARK_SCENARIOS_70=50,100,200|0ms-ktor-nio|http://ktor-benchmark:8080/ktor-nio/0
+      - BENCHMARK_SCENARIOS_71=2000,4000,8000|50ms-ktor-nio|http://ktor-benchmark:8080/ktor-nio/25
+      - BENCHMARK_SCENARIOS_72=2000,4000,8000|100ms-ktor-nio|http://ktor-benchmark:8080/ktor-nio/50
+      - BENCHMARK_SCENARIOS_73=2000,4000,8000|200ms-ktor-nio|http://ktor-benchmark:8080/ktor-nio/100
+      - BENCHMARK_SCENARIOS_80=50,100,200|0ms-nestjs-nio|http://nestjs-benchmark:8080/nestjs-nio/0
+      - BENCHMARK_SCENARIOS_81=2000,4000,8000|50ms-nestjs-nio|http://nestjs-benchmark:8080/nestjs-nio/25
+      - BENCHMARK_SCENARIOS_82=2000,4000,8000|100ms-nestjs-nio|http://nestjs-benchmark:8080/nestjs-nio/50
+      - BENCHMARK_SCENARIOS_83=2000,4000,8000|200ms-nestjs-nio|http://nestjs-benchmark:8080/nestjs-nio/100
+      ################### Solved Blocking IO issues in JDK 19, Introducing virtual threads ################
+      ################ Switching Spring MVC with Spring Boot 3.0 to use virtual threads #######################
+      - BENCHMARK_SCENARIOS_90=50,100,200|0ms-mvc(vt)-bio|http://spring-mvc-vt-benchmark:8080/mvc-bio/0
+      - BENCHMARK_SCENARIOS_91=2000,4000,8000|50ms-mvc(vt)-bio|http://spring-mvc-vt-benchmark:8080/mvc-bio/25
+      - BENCHMARK_SCENARIOS_92=2000,4000,8000|100ms-mvc(vt)-bio|http://spring-mvc-vt-benchmark:8080/mvc-bio/50
+      - BENCHMARK_SCENARIOS_93=2000,4000,8000|200ms-mvc(vt)-bio|http://spring-mvc-vt-benchmark:8080/mvc-bio/100
+      ################ Reactor + Blocking IO + Java Structured Concurrency ######################
+      - BENCHMARK_SCENARIOS_100=2000,4000,8000|200ms-webflux-bio-reactor-in-vt|http://spring-webflux-benchmark:8080/webflux-bio-reactor-in-vt/100
+      ################ Reactor + Non Blocking IO + Java Structured Concurrency ######################
+      - BENCHMARK_SCENARIOS_110=2000,4000,8000|200ms-webflux-nio-reactor-structured-concurrency|http://spring-webflux-benchmark:8080/webflux-nio-reactor-structured-concurrency/100
+      ############### Coroutine + Blocking IO with Virtual Threads (Future JDK 19)#############
+      - BENCHMARK_SCENARIOS_120=2000,4000,8000|200ms-mvc-bio-coroutine-in-vt|http://spring-mvc-benchmark:8080/mvc-bio-coroutine-in-vt/100
+      - BENCHMARK_SCENARIOS_121=2000,4000,8000|200ms-webflux-bio-coroutine-in-vt|http://spring-webflux-benchmark:8080/webflux-bio-coroutine-in-vt/100
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 6G

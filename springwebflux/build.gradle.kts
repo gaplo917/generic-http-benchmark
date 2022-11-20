@@ -27,12 +27,17 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+    jvmArgs = listOf("--enable-preview", "--add-modules=jdk.incubator.concurrent")
+}
+
 jib {
     from {
         image = "amazoncorretto:19.0.1"
         platforms {
             platform {
-                architecture = "arm64" // switch to "amd64" if Intel/AMD CPU
+                architecture = System.getenv("PLATFORM") ?: "arm64" // switch to "amd64" if Intel/AMD CPU
                 os = "linux"
             }
         }

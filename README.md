@@ -54,39 +54,81 @@ Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
 
 ```
 
-## Getting Started (end-to-end Spring)
+## Getting Started (end-to-end Gatling)
 
+### 1. Docker build 
+
+`amd64` CPU Architecture (e.g. Intel / AMD CPU)
 ```bash
 # Build Spring MVC Docker image
-./gradlew springmvc:jibDockerBuild
+PLATFORM=amd64 ./gradlew springmvc:jibDockerBuild
 
 # Build Spring WebFlux Docker image
-./gradlew springwebflux:jibDockerBuild
+PLATFORM=amd64 ./gradlew springwebflux:jibDockerBuild
 
 # Build Ktor Docker image
-./gradlew ktor:jibDockerBuild
+PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
 
-# Start the containers
-docker compose up
+# Build nestjs
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build
 
-# Start end to end benchmark
-./gradlew gatling:gatlingRun
+# Build gatling project
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose-gatling.yaml build
+
 ```
 
+OR `arm64` CPU (e.g. M1 Mac)
+```bash
+# Build Spring MVC Docker image
+PLATFORM=arm64 ./gradlew springmvc:jibDockerBuild
+
+# Build Spring WebFlux Docker image
+PLATFORM=arm64 ./gradlew springwebflux:jibDockerBuild
+
+# Build Ktor Docker image
+PLATFORM=arm64 ./gradlew ktor:jibDockerBuild
+
+# Build nestjs
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose build
+
+# Build gatling project
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose -f docker-compose-gatling.yaml build
+```
+
+### 2. Docker compose run
+
+```bash
+# Start the containers
+docker compose up -d
+
+# Change the benchmark configuration (default run all benchmarks 
+# and take at least 100 minutes and 10GB disk space to complete)
+vi docker-compose-gatling.yaml
+
+# Start the gatling benchmark
+docker compose -f docker-compose-gatling.yaml up
+```
+
+### 3. Grafana Dashboard to view container metrics
 Go to http://localhost:3000 to configure the grafana dashboard.
 
 ## Benchmark Environment
-
-WIP
+(Coming Soon)
 
 ## Benchmark Result
-
-WIP
+(Coming Soon)
 
 ## Conclusion
-
-WIP
+(Coming Soon)
 
 ## Troubleshooting
 
 Gatling too many open files on Mac: https://stackoverflow.com/questions/33836092/too-many-open-files-when-executing-gatling-on-mac
+
+## Develop Gatling Kotlin Project
+Handy command after code changes
+```bash
+docker compose up -d && docker compose -f ./docker-compose-gatling.yaml build &&  docker compose -f ./docker-compose-gatling.yaml up
+```
+
+## Contribution

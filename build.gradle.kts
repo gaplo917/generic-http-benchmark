@@ -8,13 +8,14 @@ plugins {
 allprojects {
     group = "io.github.gaplo917"
 
-    repositories { mavenCentral() }
+    repositories {
+        maven { url = uri("https://repo.spring.io/milestone") }
+        mavenCentral()
+    }
 
     apply {
         plugin("kotlin")
     }
-
-    repositories { mavenCentral() }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
@@ -23,9 +24,13 @@ allprojects {
         }
     }
 
-    tasks.withType<Test> { useJUnitPlatform() }
-
     kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(19)) } }
+
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("--enable-preview")
+        options.compilerArgs.add("--add-modules=jdk.incubator.concurrent")
+        options.release.set(19)
+    }
 
     tasks.withType<JavaExec> {
         environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent")

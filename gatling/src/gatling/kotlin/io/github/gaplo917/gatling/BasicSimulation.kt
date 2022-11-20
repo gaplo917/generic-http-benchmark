@@ -1,22 +1,58 @@
 package io.github.gaplo917.gatling
 
-import io.gatling.javaapi.core.*
 import io.gatling.javaapi.core.CoreDsl.*
-import io.gatling.javaapi.http.HttpDsl.*
-import io.netty.handler.codec.http.HttpResponseStatus
-import java.lang.IllegalArgumentException
+import io.gatling.javaapi.core.PopulationBuilder
+import io.gatling.javaapi.core.Simulation
+import io.gatling.javaapi.http.HttpDsl.http
+import io.gatling.javaapi.http.HttpDsl.status
 
 class BasicSimulation : Simulation() {
 
-    /**
-     * port defined in the docker-compose.yaml
-     */
-    private val webFluxHost = "http://localhost:8080"
-    private val mvcHost = "http://localhost:8081"
-    private val ktorHost = "http://localhost:8082"
-    private val nestJsHost = "http://localhost:8083"
+    data class Benchmark(
+        val name: String,
+        val endpoint: String,
+        val peakConcurrencyList: List<Int>
+    )
 
-    private val concurrency = 2_500
+    private fun env(key: String): String? = System.getenv(key)?.also {
+        println("Picked up $key=$it")
+    }
+
+    private val timeout by lazy {
+        env("BENCHMARK_REQUEST_TIMEOUT")?.toInt() ?: 30
+    }
+
+    private val coolDownDuration by lazy {
+        env("BENCHMARK_COOL_DOWN_DURATION")?.toLong() ?: 10L
+    }
+
+    private val warmUpDuration by lazy {
+        env("BENCHMARK_WARM_UP_DURATION")?.toLong() ?: 10L
+    }
+
+    private val rampUpDuration by lazy {
+        env("BENCHMARK_RAMP_UP_DURATION")?.toLong() ?: 10L
+    }
+
+    private val sustainPeakDuration by lazy {
+        env("BENCHMARK_SUSTAIN_PEAK_DURATION")?.toLong() ?: 10L
+    }
+
+    // example: 100000|50ms-mvc-blocking|http://spring-mvc-benchmark:8080/mvc-blocking/25
+    private val scenariosInput by lazy {
+        Array(10000) { index ->
+            env("BENCHMARK_SCENARIOS_${index}")
+        }
+            .mapNotNull { it }
+            .map { input ->
+                val arr = input.split("|").map { it.trim() }
+                Benchmark(
+                    name = arr[1],
+                    endpoint = arr[2],
+                    peakConcurrencyList = arr[0].split(",").map { it.toInt() }
+                )
+            }
+    }
 
     private val httpProtocol = http
         .shareConnections()
@@ -26,172 +62,68 @@ class BasicSimulation : Simulation() {
         .userAgentHeader("gatling")
         .maxConnectionsPerHost(1)
 
-    private val ioDelayVariants = listOf<Int>(
-        25,
-        50,
-        100,
-        200
-    )
-    private val scenarios =
+    private val scenarios = scenariosInput.map { input ->
         createScenarios(
-            ioDelayVariants = ioDelayVariants,
-            approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-            concurrency = concurrency,
-            name = { ioDelay -> "${ioDelay * 2}ms-ktor-non-blocking" },
-            endpoint = { ioDelay -> "$ktorHost/ktor-non-blocking/${ioDelay}" }
-        ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-nestjs-non-blocking" },
-                    endpoint = { ioDelay -> "$nestJsHost/nestjs-non-blocking/${ioDelay}" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-non-blocking-coroutine" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-non-blocking-coroutine/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-non-blocking-reactor" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-non-blocking-reactor/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-non-blocking-reactor-structured-concurrency" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-non-blocking-reactor-structured-concurrency/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-blocking-structured-concurrency" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-blocking-structured-concurrency/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-blocking-vt-reactor" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-blocking-vt-reactor/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-webflux-blocking-vt-coroutine" },
-                    endpoint = { ioDelay -> "$webFluxHost/webflux-blocking-vt-coroutine/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> poorPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-mvc-blocking" },
-                    endpoint = { ioDelay -> "$mvcHost/mvc-blocking/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-mvc-blocking-vt-future" },
-                    endpoint = { ioDelay -> "$mvcHost/mvc-blocking-vt-future/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-mvc-blocking-vt-coroutine" },
-                    endpoint = { ioDelay -> "$mvcHost/mvc-blocking-vt-coroutine/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-mvc-non-blocking-future" },
-                    endpoint = { ioDelay -> "$mvcHost/mvc-non-blocking-future/$ioDelay" }
-                ) +
-                createScenarios(
-                    ioDelayVariants = ioDelayVariants,
-                    approximateNumOfRequest = { ioDelay -> goodPerformance(ioDelay) },
-                    concurrency = concurrency,
-                    name = { ioDelay -> "${ioDelay * 2}ms-mvc-non-blocking-coroutine" },
-                    endpoint = { ioDelay -> "$mvcHost/mvc-non-blocking-coroutine/$ioDelay" }
-                )
-
-
-    private fun goodPerformance(ioDelay: Int): Int {
-        return when (ioDelay) {
-            25 -> 100_000
-            50 -> 100_000
-            100 -> 100_000
-            200 -> 100_000
-            else -> throw IllegalArgumentException("not supported ioDelay number")
-        }
-    }
-
-    /**
-     * When the scenario QPS is very low, we don't want to test a large number of result
-     */
-    private fun poorPerformance(ioDelay: Int): Int {
-        return when (ioDelay) {
-            25 -> 100_000
-            50 -> 100_000
-            100 -> 50_000
-            200 -> 25_000
-            else -> throw IllegalArgumentException("not supported ioDelay number")
-        }
+            peakConcurrencyList = input.peakConcurrencyList,
+            name = input.name,
+            endpoint = input.endpoint
+        )
     }
 
     private fun createScenarios(
-        ioDelayVariants: List<Int>,
-        approximateNumOfRequest: (Int) -> Int,
-        concurrency: Int,
-        name: (Int) -> String,
-        endpoint: (Int) -> String
-    ): List<PopulationBuilder> {
-        return ioDelayVariants.map { ioDelay ->
-            val repeat = (approximateNumOfRequest(ioDelay) / concurrency).coerceAtLeast(1)
+        peakConcurrencyList: List<Int>,
+        name: String,
+        endpoint: String,
+    ): PopulationBuilder {
 
-            scenario(name(ioDelay))
-                // requests for warming up
-                .repeat(repeat)
-                .on(
-                    exec(
-                        http(name(ioDelay)).get(endpoint(ioDelay))
-                            .requestTimeout(30)
-                            .check(status().`is`(200))
-                            .silent()
+        val execution = during(5L)
+            .on(
+                exec(
+                    http(name).get(endpoint)
+                        .requestTimeout(timeout)
+                        .check(status().`is`(200))
+                )
+            )
+
+        val warmUp = scenario("warmup-$name")
+            .group("warmup")
+            .on(execution)
+            .injectClosed(
+                rampConcurrentUsers(0).to(peakConcurrencyList.last()).during(warmUpDuration),
+            )
+
+        val actual = scenario(name)
+            .group("benchmark")
+            .on(execution)
+            .injectClosed(
+                *peakConcurrencyList.flatMapIndexed { index, concurrency ->
+                    val prevConcurrency = if (index == 0) 0 else peakConcurrencyList[index - 1]
+                    listOf(
+                        rampConcurrentUsers(prevConcurrency).to(concurrency).during(rampUpDuration),
+                        constantConcurrentUsers(concurrency).during(sustainPeakDuration)
                     )
-                )
-                // actual measure
-                .repeat(repeat)
-                .on(
-                    exec(
-                        http(name(ioDelay)).get(endpoint(ioDelay))
-                            .requestTimeout(30)
-                            .check(status().`is`(200))
-                    )
-                )
-                .injectOpen(
-                    nothingFor(10),
-                    constantUsersPerSec(concurrency / 10.0).during(10)
-                )
-        }
+                }.toTypedArray()
+            )
+
+        return warmUp
+            .andThen(
+                scenario("cool-down1-$name")
+                    .pause(coolDownDuration)
+                    .injectOpen(nothingFor(coolDownDuration))
+            )
+            .andThen(actual)
+            .andThen(
+                scenario("cool-down2-$name")
+                    .pause(coolDownDuration)
+                    .injectOpen(nothingFor(coolDownDuration))
+            )
     }
 
     init {
-        setUp(
-            scenarios.reduce { acc, populationBuilder ->
-                acc.andThen(populationBuilder)
-            }
-        ).protocols(httpProtocol)
+        setUp(scenarios.reduce { acc, e ->
+            acc.andThen(e)
+        }).protocols(httpProtocol)
+
     }
 }
 

@@ -30,7 +30,7 @@ fun Application.configureRouting() {
         }
 
     routing {
-        get("/ktor-non-blocking/{ioDelay}") {
+        get("/ktor-nio/{ioDelay}") {
             val ioDelay = call.parameters["ioDelay"]?.toLong()!!
             val resp = nonBlockingIO(ioDelay)
             val result = dependentNonBlockingIO(ioDelay, resp)

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "1.7.20"
     id("io.gatling.gradle") version "3.8.4"
 }
 
@@ -19,6 +19,7 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
 gatling {
     jvmArgs = listOf("-XX:+UseZGC", "-Xms512M", "-Xmx4G", "-XX:-MaxFDLimit")
