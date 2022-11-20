@@ -96,7 +96,7 @@ DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose -f docker-compose-gatling.
 ```
 
 ### 2. Docker compose run
-
+You might need at least 8 CPU and 40GB RAM for the whole docker engine.
 ```bash
 # Start the containers
 docker compose up -d
@@ -122,8 +122,7 @@ Go to http://localhost:3000 to configure the grafana dashboard.
 (Coming Soon)
 
 ## Troubleshooting
-
-Gatling too many open files on Mac: https://stackoverflow.com/questions/33836092/too-many-open-files-when-executing-gatling-on-mac
+WIP
 
 ## Develop Gatling Kotlin Project
 Handy command after code changes
@@ -132,3 +131,5 @@ docker compose up -d && docker compose -f ./docker-compose-gatling.yaml build &&
 ```
 
 ## Contribution
+1. Add new web framework implementation according to existing implementation
+2. Add gatling benchmark in `docker-compose-gatling.yaml` for the same concurrency
