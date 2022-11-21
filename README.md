@@ -75,13 +75,13 @@ PLATFORM=amd64 ./gradlew springwebflux:jibDockerBuild
 PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
 
 # Build nestjs
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/nestjs.env build
 
 # Build actixweb(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/actixweb.env build
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/actixweb.env build
 
 # Build warp(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/warp.env build
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/warp.env build
 
 ```
 
