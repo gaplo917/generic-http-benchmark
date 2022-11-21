@@ -14,8 +14,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 4G
+          cpus: ${SERVICE_CONTAINER_CPU_LIMIT}
+          memory: ${SERVICE_CONTAINER_MEMORY_LIMIT}
   gatling-runner:
     container_name: gatling-runner
     build: gatling/
@@ -34,8 +34,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4.0'
-          memory: 6G
+          cpus: ${GATLING_RUNNER_CONTAINER_CPU_LIMIT}
+          memory: ${GATLING_RUNNER_CONTAINER_MEMORY_LIMIT}
   prometheus:
     container_name: prometheus
     image: prom/prometheus
