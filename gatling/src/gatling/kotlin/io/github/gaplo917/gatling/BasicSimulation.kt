@@ -22,10 +22,6 @@ class BasicSimulation : Simulation() {
         env("BENCHMARK_REQUEST_TIMEOUT")?.toInt() ?: 30
     }
 
-    private val coolDownDuration by lazy {
-        env("BENCHMARK_COOL_DOWN_DURATION")?.toLong() ?: 10L
-    }
-
     private val warmUpDuration by lazy {
         env("BENCHMARK_WARM_UP_DURATION")?.toLong() ?: 10L
     }
@@ -76,7 +72,21 @@ class BasicSimulation : Simulation() {
         endpoint: String,
     ): PopulationBuilder {
 
-        val execution = during(5L)
+        val warmUp = scenario("warmup-$name")
+            .during(5L)
+            .on(
+                exec(
+                    http("warmup-$name").get(endpoint)
+                        .requestTimeout(timeout)
+                        .check(status().`is`(200))
+                )
+            )
+            .injectClosed(
+                rampConcurrentUsers(0).to(peakConcurrencyList.last()).during(warmUpDuration),
+            )
+
+        val actual = scenario(name)
+            .during(5L)
             .on(
                 exec(
                     http(name).get(endpoint)
@@ -84,17 +94,6 @@ class BasicSimulation : Simulation() {
                         .check(status().`is`(200))
                 )
             )
-
-        val warmUp = scenario("warmup-$name")
-            .group("warmup")
-            .on(execution)
-            .injectClosed(
-                rampConcurrentUsers(0).to(peakConcurrencyList.last()).during(warmUpDuration),
-            )
-
-        val actual = scenario(name)
-            .group("benchmark")
-            .on(execution)
             .injectClosed(
                 *peakConcurrencyList.flatMapIndexed { index, concurrency ->
                     val prevConcurrency = if (index == 0) 0 else peakConcurrencyList[index - 1]
@@ -106,17 +105,7 @@ class BasicSimulation : Simulation() {
             )
 
         return warmUp
-            .andThen(
-                scenario("cool-down1-$name")
-                    .pause(coolDownDuration)
-                    .injectOpen(nothingFor(coolDownDuration))
-            )
             .andThen(actual)
-            .andThen(
-                scenario("cool-down2-$name")
-                    .pause(coolDownDuration)
-                    .injectOpen(nothingFor(coolDownDuration))
-            )
     }
 
     init {
