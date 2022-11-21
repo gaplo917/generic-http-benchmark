@@ -1,8 +1,11 @@
 #!/bin/bash
+RESULT_PATH="e2e-result"
+mkdir -p $RESULT_PATH
+
 for env in ./config/* ; do
   ENV_FILE=$env
   FILE_NAME="$(basename -s .env $env)"
-  RESULT="e2e-result/$FILE_NAME.txt"
+  RESULT="$RESULT_PATH/$FILE_NAME.txt"
 
   touch $RESULT;
   # Add date
