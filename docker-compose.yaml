@@ -37,31 +37,31 @@ services:
         limits:
           cpus: ${GATLING_RUNNER_CONTAINER_CPU_LIMIT}
           memory: ${GATLING_RUNNER_CONTAINER_MEMORY_LIMIT}
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    links:
-      - benchmark-target:${BENCHMARK_TARGET}
-    ports:
-      - '9090:9090'
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
-  grafana:
-    container_name: grafana
-    volumes:
-      - ./docker-cache/grafana:/var/lib/grafana
-    image: grafana/grafana
-    links:
-      - prometheus
-    ports:
-      - '3000:3000'
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
+#  prometheus:
+#    container_name: prometheus
+#    image: prom/prometheus
+#    volumes:
+#      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+#    links:
+#      - benchmark-target:${BENCHMARK_TARGET}
+#    ports:
+#      - '9090:9090'
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.25'
+#          memory: 256M
+#  grafana:
+#    container_name: grafana
+#    volumes:
+#      - ./docker-cache/grafana:/var/lib/grafana
+#    image: grafana/grafana
+#    links:
+#      - prometheus
+#    ports:
+#      - '3000:3000'
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.25'
+#          memory: 256M

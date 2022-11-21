@@ -73,6 +73,12 @@ PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
 # Build nestjs
 DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
 
+# Build actixweb(Rust)
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/actixweb.env build
+
+# Build warp(Rust)
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/warp.env build
+
 ```
 
 OR `arm64` CPU (e.g. M1 Mac)
@@ -87,8 +93,14 @@ PLATFORM=arm64 ./gradlew springwebflux:jibDockerBuild
 # Build Ktor Docker image
 PLATFORM=arm64 ./gradlew ktor:jibDockerBuild
 
-# Build nestjs
+# Build nestjs(Nodejs)
 DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
+
+# Build actixweb(Rust)
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/actixweb.env build
+
+# Build warp(Rust)
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/warp.env build
 
 ```
 
@@ -99,12 +111,21 @@ You might need at least 5 CPU and 12GB RAM for the whole docker engine.
 ```bash
 # Run single benchmark (i.e. ktor)
 ENV_FILE=./config/ktor.env
-docker compose --env-file $ENV_FILE up -d benchmark-target prometheus grafana && \
+docker compose --env-file $ENV_FILE up -d benchmark-target && \
+docker compose --env-file $ENV_FILE build gatling-runner && \
 docker compose --env-file $ENV_FILE up gatling-runner && \
-docker compose down
+docker compose --env-file $ENV_FILE down
 ```
 
-### 3. Grafana Dashboard to view container metrics
+### 3. (Optional) Grafana Dashboard to view application metrics
+
+1. Unhide the `prometheus` and `grafana` services in `docker-compose.yaml`
+2. Make sure the application support prometheus, and add job and endpoints in `prometheus.yml`
+
+```bash
+ENV_FILE=./config/ktor.env
+docker compose --env-file $ENV_FILE up -d benchmark-target prometheus grafana &&
+```
 
 Go to http://localhost:3000 to configure the grafana dashboard.
 
@@ -126,15 +147,13 @@ WIP
 
 ## Develop Gatling Kotlin Project
 
-Handy command after Gatling code changes
+After making Gatling code changes, make sure you run to build the docker image.
 
 ```bash
-docker compose --env-file ./config/ktor.env up -d benchmark-target prometheus grafana && \
-docker compose --env-file ./config/ktor.env up gatling-runner && \
-docker compose down
+docker compose --env-file $ENV_FILE build gatling-runner
 ```
 
 ## Contribution
 
-1. Add new web framework implementation according to existing implementation
-2. Add gatling benchmark in `docker-compose-gatling.yaml` for the same concurrency
+1. Add new web framework `XXX` implementation that is equivalent to others languages.
+2. Add gatling benchmark configuration in `./config/xxx.env`
