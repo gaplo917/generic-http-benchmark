@@ -15,13 +15,13 @@ import java.util.concurrent.Executors
 @SpringBootApplication
 class SpringMVCApplication {
     @Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
-    @ConditionalOnProperty(name = ["ENABLE_VIRTUAL_THREAD"], havingValue = "true")
+    @ConditionalOnProperty(name = ["APP_ENABLE_VIRTUAL_THREAD"], havingValue = "true")
     fun asyncTaskExecutor(): AsyncTaskExecutor {
         return TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor())
     }
 
     @Bean
-    @ConditionalOnProperty(name = ["ENABLE_VIRTUAL_THREAD"], havingValue = "true")
+    @ConditionalOnProperty(name = ["APP_ENABLE_VIRTUAL_THREAD"], havingValue = "true")
     fun protocolHandlerVirtualThreadExecutorCustomizer(): TomcatProtocolHandlerCustomizer<*>? {
         return TomcatProtocolHandlerCustomizer { protocolHandler: ProtocolHandler ->
             protocolHandler.executor = Executors.newVirtualThreadPerTaskExecutor()
