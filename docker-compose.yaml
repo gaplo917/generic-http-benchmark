@@ -4,71 +4,37 @@ networks:
     name: kotlin-coroutine-benchmark-network
     driver: bridge
 services:
-  spring-webflux-benchmark:
-    container_name: spring-webflux-benchmark
-    image: spring-webflux-benchmark:latest
+  benchmark-target:
+    container_name: ${BENCHMARK_TARGET}
+    image: ${BENCHMARK_TARGET}:latest
     ports:
       - '8080:8080'
+    env_file:
+      - ${BENCHMARK_TARGET_ENV_FILE}
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 6G
-  spring-mvc-benchmark:
-    container_name: spring-mvc-benchmark
-    image: spring-mvc-benchmark:latest
-    ports:
-      - '8081:8080'
+          cpus: '1.0'
+          memory: 4G
+  gatling-runner:
+    container_name: gatling-runner
+    build: gatling/
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+    links:
+      - benchmark-target:${BENCHMARK_TARGET}
+    volumes:
+      - ./docker-cache/gatling-runner/.gradle:/usr/src/app/.gradle
+      - ./docker-cache/gatling-runner/build:/usr/src/app/build
+    env_file:
+      - ${GATLING_RUNNER_ENV_FILE}
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 6G
-    environment:
-      - SERVER_TOMCAT_THREADS_MAX=200
-  spring-mvc-2k-benchmark:
-    container_name: spring-mvc-2k-benchmark
-    image: spring-mvc-benchmark:latest
-    ports:
-      - '8082:8080'
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 6G
-    environment:
-      - SERVER_TOMCAT_THREADS_MAX=2000
-  spring-mvc-vt-benchmark:
-    container_name: spring-mvc-vt-benchmark
-    image: spring-mvc-benchmark:latest
-    ports:
-      - '8083:8080'
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 6G
-    environment:
-      - ENABLE_VIRTUAL_THREAD=true
-  ktor-benchmark:
-    container_name: ktor-benchmark
-    image: ktor-benchmark:latest
-    ports:
-      - '8084:8080'
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 6G
-  nestjs-benchmark:
-    container_name: nestjs-benchmark
-    build: nestjs/
-    ports:
-      - '8085:8080'
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
+          cpus: '4.0'
           memory: 6G
   prometheus:
     container_name: prometheus
@@ -76,17 +42,14 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     links:
-      - spring-mvc-benchmark
-      - spring-webflux-benchmark
-      - ktor-benchmark
-      - nestjs-benchmark
+      - benchmark-target:${BENCHMARK_TARGET}
     ports:
       - '9090:9090'
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 1G
+          cpus: '0.25'
+          memory: 256M
   grafana:
     container_name: grafana
     volumes:
@@ -99,5 +62,5 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 1G
+          cpus: '0.25'
+          memory: 256M

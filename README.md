@@ -56,9 +56,10 @@ Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
 
 ## Getting Started (end-to-end Gatling)
 
-### 1. Docker build 
+### 1. Docker build
 
 `amd64` CPU Architecture (e.g. Intel / AMD CPU)
+
 ```bash
 # Build Spring MVC Docker image
 PLATFORM=amd64 ./gradlew springmvc:jibDockerBuild
@@ -72,12 +73,10 @@ PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
 # Build nestjs
 DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build
 
-# Build gatling project
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose -f docker-compose-gatling.yaml build
-
 ```
 
 OR `arm64` CPU (e.g. M1 Mac)
+
 ```bash
 # Build Spring MVC Docker image
 PLATFORM=arm64 ./gradlew springmvc:jibDockerBuild
@@ -90,46 +89,50 @@ PLATFORM=arm64 ./gradlew ktor:jibDockerBuild
 
 # Build nestjs
 DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose build
-
-# Build gatling project
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose -f docker-compose-gatling.yaml build
 ```
 
 ### 2. Docker compose run
-You might need at least 8 CPU and 40GB RAM for the whole docker engine.
+
+You might need at least 5 CPU and 12GB RAM for the whole docker engine.
+
 ```bash
-# Start the containers
-docker compose up -d
-
-# Change the benchmark configuration (default run all benchmarks 
-# and take at least 100 minutes and 10GB disk space to complete)
-vi docker-compose-gatling.yaml
-
-# Start the gatling benchmark
-docker compose -f docker-compose-gatling.yaml up
+# Run single benchmark
+docker compose --env-file ./config/ktor.env up -d benchmark-target prometheus grafana && \
+docker compose --env-file ./config/ktor.env up gatling-runner && \
+docker compose down
 ```
 
 ### 3. Grafana Dashboard to view container metrics
+
 Go to http://localhost:3000 to configure the grafana dashboard.
 
 ## Benchmark Environment
+
 (Coming Soon)
 
 ## Benchmark Result
+
 (Coming Soon)
 
 ## Conclusion
+
 (Coming Soon)
 
 ## Troubleshooting
+
 WIP
 
 ## Develop Gatling Kotlin Project
-Handy command after code changes
+
+Handy command after Gatling code changes
+
 ```bash
-docker compose up -d && docker compose -f ./docker-compose-gatling.yaml build &&  docker compose -f ./docker-compose-gatling.yaml up
+docker compose --env-file ./config/ktor.env up -d benchmark-target prometheus grafana && \
+docker compose --env-file ./config/ktor.env up gatling-runner && \
+docker compose down
 ```
 
 ## Contribution
+
 1. Add new web framework implementation according to existing implementation
 2. Add gatling benchmark in `docker-compose-gatling.yaml` for the same concurrency

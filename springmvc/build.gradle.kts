@@ -45,7 +45,7 @@ jib {
     }
     container {
         environment = mapOf(
-            "JAVA_TOOL_OPTIONS" to "-XX:+UseZGC -Xmx4G --enable-preview --add-modules=jdk.incubator.concurrent",
+            "JAVA_TOOL_OPTIONS" to "-XX:+UseZGC -Xmx3G --enable-preview --add-modules=jdk.incubator.concurrent",
         )
     }
 }
