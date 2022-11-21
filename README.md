@@ -47,6 +47,8 @@ Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
 
 ## Getting Started (JMH)
 
+Use JMH to run micro-benchmarks on Kotlin Coroutine, Virtual Threads, and Reactor.
+
 ```bash
 
 # Run JMH benchmark
@@ -54,7 +56,9 @@ Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
 
 ```
 
-## Getting Started (end-to-end Gatling)
+## Getting Started (end-to-end HTTP benchmark)
+
+Use [Gatling](https://gatling.io/) to run benchmarks to collect end-to-end result.
 
 ### 1. Docker build
 
@@ -117,9 +121,19 @@ docker compose --env-file $ENV_FILE up gatling-runner && \
 docker compose --env-file $ENV_FILE down
 ```
 
+OR
+
+```bash
+# Run all benchmarks, config available in `./config/`
+sh e2e-gatling-benchmark.sh
+```
+
+it will generate benchmark result in `./e2e-result/`,
+use the gatling log to trace the benchmark report in `./docker-cache/gatling-runner/build/reports/`.
+
 ### 3. (Optional) Grafana Dashboard to view application metrics
 
-1. Unhide the `prometheus` and `grafana` services in `docker-compose.yaml`
+1. Un-comment the `prometheus` and `grafana` services in `docker-compose.yaml`
 2. Make sure the application support prometheus, and add job and endpoints in `prometheus.yml`
 
 ```bash
