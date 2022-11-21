@@ -7,6 +7,7 @@ services:
   benchmark-target:
     container_name: ${BENCHMARK_TARGET}
     image: ${BENCHMARK_TARGET}:latest
+    build: ${BENCHMARK_TARGET_DOCKER_BUILD_FOLDER}
     ports:
       - '8080:8080'
     env_file:
@@ -25,7 +26,7 @@ services:
         soft: 65535
         hard: 65535
     links:
-      - benchmark-target:${BENCHMARK_TARGET}
+      - benchmark-target
     volumes:
       - ./docker-cache/gatling-runner/.gradle:/usr/src/app/.gradle
       - ./docker-cache/gatling-runner/build:/usr/src/app/build

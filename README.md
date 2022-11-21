@@ -71,7 +71,7 @@ PLATFORM=amd64 ./gradlew springwebflux:jibDockerBuild
 PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
 
 # Build nestjs
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
 
 ```
 
@@ -88,7 +88,8 @@ PLATFORM=arm64 ./gradlew springwebflux:jibDockerBuild
 PLATFORM=arm64 ./gradlew ktor:jibDockerBuild
 
 # Build nestjs
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose build
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
+
 ```
 
 ### 2. Docker compose run
@@ -96,9 +97,10 @@ DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose build
 You might need at least 5 CPU and 12GB RAM for the whole docker engine.
 
 ```bash
-# Run single benchmark
-docker compose --env-file ./config/ktor.env up -d benchmark-target prometheus grafana && \
-docker compose --env-file ./config/ktor.env up gatling-runner && \
+# Run single benchmark (i.e. ktor)
+ENV_FILE=./config/ktor.env
+docker compose --env-file $ENV_FILE up -d benchmark-target prometheus grafana && \
+docker compose --env-file $ENV_FILE up gatling-runner && \
 docker compose down
 ```
 
