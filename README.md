@@ -171,3 +171,10 @@ docker compose --env-file $ENV_FILE build gatling-runner
 
 1. Add new web framework `XXX` implementation that is equivalent to others languages.
 2. Add gatling benchmark configuration in `./config/xxx.env`
+
+## Troubleshooting
+
+```bash
+# Remove orphans containers
+docker compose --env-file ./config/ktor.env down --remove-orphans
+```
