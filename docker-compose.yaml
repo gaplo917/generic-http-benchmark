@@ -8,6 +8,7 @@ services:
     container_name: ${BENCHMARK_TARGET_DOCKER_CONTAINER_NAME}
     image: ${BENCHMARK_TARGET_DOCKER_IMAGE}:latest
     build: ${BENCHMARK_TARGET_DOCKER_BUILD_FOLDER}
+    restart: always # recover from crash
     ports:
       - '8080:8080'
     env_file:
