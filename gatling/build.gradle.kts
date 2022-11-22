@@ -21,6 +21,4 @@ tasks.getByName<Test>("test") {
 
 kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
-gatling {
-    jvmArgs = listOf("-XX:+UseZGC", "-Xms512M", "-Xmx4G", "-XX:-MaxFDLimit")
-}
+gatling {}

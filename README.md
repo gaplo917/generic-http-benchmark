@@ -52,7 +52,8 @@ Use JMH to run micro-benchmarks on Kotlin Coroutine, Virtual Threads, and Reacto
 ```bash
 
 # Run JMH benchmark
-./gradlew jmh:mainBenchmark
+cd jmh;
+./gradlew mainBenchmark;
 
 ```
 
@@ -72,62 +73,18 @@ In `./config/*.env`, there are key configurations to control gatling's concurren
 
 First, you need to build the docker image for each application you want to test.
 
-You might need at least 5 CPU and 12GB RAM for the whole docker engine.
+You might need at least 7 vCPU and 16GB Memory resources for the whole docker engine.
 
-To run the docker application, build the docker image in corresponding architecture
-of your machine.
-
-Intel / AMD CPU Architecture (`amd64`)
+Run a single benchmark with the follow commands, it will build automatically if there is no available images.
 
 ```bash
-# Build Spring MVC Docker image
-PLATFORM=amd64 ./gradlew springmvc:jibDockerBuild
+# In case you need to change architecture to build cross platform
+DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 # Mac M1/M2 CPU
+DOCKER_DEFAULT_PLATFORM=linux/amd64 # Intel / AMD CPU
 
-# Build Spring WebFlux Docker image
-PLATFORM=amd64 ./gradlew springwebflux:jibDockerBuild
-
-# Build Ktor Docker image
-PLATFORM=amd64 ./gradlew ktor:jibDockerBuild
-
-# Build nestjs
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/nestjs.env build
-
-# Build actixweb(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/actixweb.env build
-
-# Build warp(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/warp.env build
-
-```
-
-M1 Mac or other ARM CPU (`arm64`)
-
-```bash
-# Build Spring MVC Docker image
-PLATFORM=arm64 ./gradlew springmvc:jibDockerBuild
-
-# Build Spring WebFlux Docker image
-PLATFORM=arm64 ./gradlew springwebflux:jibDockerBuild
-
-# Build Ktor Docker image
-PLATFORM=arm64 ./gradlew ktor:jibDockerBuild
-
-# Build nestjs(Nodejs)
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/nestjs.env build
-
-# Build actixweb(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/actixweb.env build
-
-# Build warp(Rust)
-DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/warp.env build
-
-```
-
-Then try to run a single benchmark with the follow commands.
-
-```bash
 # Run single benchmark (i.e. ktor)
 ENV_FILE=./config/spring-mvc-16k.env
+docker compose --env-file $ENV_FILE build benchmark-target && \
 docker compose --env-file $ENV_FILE up -d benchmark-target && \
 docker compose --env-file $ENV_FILE build gatling-runner && \
 docker compose --env-file $ENV_FILE up gatling-runner && \

@@ -1,0 +1,5 @@
+**/*.log
+**/build
+docker-cache
+**/.gradle
+!gradle-wrapper.jar

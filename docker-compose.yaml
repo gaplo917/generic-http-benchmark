@@ -33,6 +33,7 @@ services:
       - ./gatling-reports:/usr/src/app/build/reports/gatling
     env_file:
       - ${GATLING_RUNNER_ENV_FILE}
+      - config/gatling/default.env
     deploy:
       resources:
         limits:

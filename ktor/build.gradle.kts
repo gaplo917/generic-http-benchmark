@@ -5,10 +5,9 @@ val prometeus_version: String by project
 
 plugins {
     application
-    kotlin("jvm")
+    kotlin("jvm") version "1.7.20"
     id("io.ktor.plugin") version "2.1.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.21"
-    id("com.google.cloud.tools.jib")
 }
 
 group = "io.github.gaplo917"
@@ -34,25 +33,4 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-}
-
-jib {
-    from {
-        image = "amazoncorretto:19.0.1"
-        platforms {
-            platform {
-                architecture = System.getenv("PLATFORM") ?: "arm64" // switch to "amd64" if Intel/AMD CPU
-                os = "linux"
-            }
-        }
-    }
-    to {
-        image = "ktor-benchmark"
-        tags = setOf("latest")
-    }
-    container {
-        environment = mapOf(
-            "JAVA_TOOL_OPTIONS" to "-XX:+UseZGC -Xmx3G --enable-preview --add-modules=jdk.incubator.concurrent",
-        )
-    }
 }

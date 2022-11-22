@@ -1,21 +1,25 @@
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    id("com.google.cloud.tools.jib")
+    id("org.springframework.boot") version "3.0.0-RC2"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "1.7.20"
+    kotlin("plugin.spring") version "1.7.20"
 }
 
 version = "0.0.1-SNAPSHOT"
+
+repositories {
+    maven { url = uri("https://repo.spring.io/milestone") }
+    mavenCentral()
+}
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.reactor)
-    implementation(libs.kotlinx.coroutines.jdk8)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
 
     // integration with grafana
     implementation("io.micrometer:micrometer-registry-prometheus")
@@ -24,28 +28,36 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("--enable-preview")
+    options.compilerArgs.add("--add-modules=jdk.incubator.concurrent")
+    options.release.set(19)
+}
+
+tasks.withType<JavaExec> {
+    environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
     jvmArgs = listOf("--enable-preview", "--add-modules=jdk.incubator.concurrent")
-}
-
-jib {
-    from {
-        image = "amazoncorretto:19.0.1"
-        platforms {
-            platform {
-                architecture = System.getenv("PLATFORM") ?: "arm64" // switch to "amd64" if Intel/AMD CPU
-                os = "linux"
-            }
-        }
-    }
-    to {
-        image = "spring-mvc-benchmark"
-        tags = setOf("latest")
-    }
-    container {
-        environment = mapOf(
-            "JAVA_TOOL_OPTIONS" to "-XX:+UseZGC -Xmx3G --enable-preview --add-modules=jdk.incubator.concurrent",
-        )
-    }
 }
