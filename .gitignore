@@ -494,4 +494,4 @@ build
 e2e-result
 docker-cache
 **/node_modules
-gatling-reports
+reports

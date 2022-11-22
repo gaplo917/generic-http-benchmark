@@ -101,7 +101,7 @@ it will output all the `gatling-runner` log to `./logs/`
 
 ### 4. Study the Gatling reports
 
-Use the `./logs/ to trace the benchmark report in `./gatling-reports/`. Hope you would have a
+Use the `./logs/ to trace the benchmark report in `./reports/`. Hope you would have a
 great understanding on your application!
 
 ### (Optional) Grafana Dashboard to view application metrics
