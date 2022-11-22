@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  s3-upload:
+    image: minio/mc
+    volumes:
+       - ./upload:/upload
+       - ./minio-upload.sh:/minio-upload.sh
+    env_file: cf.secret.env
+    entrypoint: "bash -c 'bash minio-upload.sh'"

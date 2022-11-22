@@ -496,3 +496,4 @@ docker-cache
 **/node_modules
 reports
 upload
+*.secret.env
