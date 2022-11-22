@@ -84,9 +84,8 @@ DOCKER_DEFAULT_PLATFORM=linux/amd64 # Intel / AMD CPU
 
 # Run single benchmark (i.e. ktor)
 ENV_FILE=./config/spring-mvc-16k.env
-docker compose --env-file $ENV_FILE build benchmark-target && \
+docker compose --env-file $ENV_FILE build && \
 docker compose --env-file $ENV_FILE up -d benchmark-target && \
-docker compose --env-file $ENV_FILE build gatling-runner && \
 docker compose --env-file $ENV_FILE up gatling-runner && \
 docker compose --env-file $ENV_FILE down
 ```

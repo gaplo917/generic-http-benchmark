@@ -4,23 +4,32 @@ DIR="$RESULT_PATH/build/$(date +%Y%m%d%H%M%S)";
 
 mkdir -p $DIR;
 
-for env in ./config/* ; do
+IMAGES=();
+
+for env in ./config/*.env ; do
   ENV_FILE=$env;
   FILE_NAME="$(basename -s .env $env)";
   RESULT="$DIR/$FILE_NAME.txt";
 
-  touch $RESULT;
+  IMAGE=$(cat $ENV_FILE | grep "BENCHMARK_TARGET_DOCKER_IMAGE=");
 
-  # Add date
-  echo "Build $ENV_FILE at $(date -u)" | tee -a $RESULT;
+  if [[ ! "${IMAGES[@]}" =~ "$IMAGE" ]]; then
+      echo "Found a unique image: $IMAGE";
+      IMAGES=(${IMAGES[@]} $IMAGE);
 
-  # TODO: optimize to only build distinct docker image
-  (docker compose --env-file $ENV_FILE build >> $RESULT)  &
+      touch $RESULT;
+
+      # Add date
+      echo "Build $ENV_FILE at $(date -u), check the log via $RESULT\n" | tee -a $RESULT;
+
+      (docker compose --env-file $ENV_FILE build >> $RESULT)  &
+  fi
 done
 
-echo "Waiting all build ready..."
+echo "Waiting all build ready...";
+
 while [[ $(jobs -pr) ]]; do
   sleep 1;
 done
 
-echo "Done."
+echo "Done.";
