@@ -58,11 +58,26 @@ Use JMH to run micro-benchmarks on Kotlin Coroutine, Virtual Threads, and Reacto
 
 ## Getting Started (end-to-end HTTP benchmark)
 
-Use [Gatling](https://gatling.io/) to run benchmarks to collect end-to-end result.
+All benchmark targets are designed to run in Docker container and use [Gatling](https://gatling.io/)
+to run the load test and get the benchmark of end-to-end result.
 
-### 1. Docker build
+![cover](cover.png)
 
-`amd64` CPU Architecture (e.g. Intel / AMD CPU)
+### 1. Define benchmark scenarios in `./config/*.env`
+
+In `./config/*.env`, there are key configurations to control gatling's concurrency.
+![duration](duration-explained.png)
+
+### 2. Start up the benchmark
+
+First, you need to build the docker image for each application you want to test.
+
+You might need at least 5 CPU and 12GB RAM for the whole docker engine.
+
+To run the docker application, build the docker image in corresponding architecture
+of your machine.
+
+Intel / AMD CPU Architecture (`amd64`)
 
 ```bash
 # Build Spring MVC Docker image
@@ -85,7 +100,7 @@ DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose --env-file ./config/warp.env 
 
 ```
 
-OR `arm64` CPU (e.g. M1 Mac)
+M1 Mac or other ARM CPU (`arm64`)
 
 ```bash
 # Build Spring MVC Docker image
@@ -108,30 +123,32 @@ DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 docker compose --env-file ./config/warp.e
 
 ```
 
-### 2. Docker compose run
-
-You might need at least 5 CPU and 12GB RAM for the whole docker engine.
+Then try to run a single benchmark with the follow commands.
 
 ```bash
 # Run single benchmark (i.e. ktor)
-ENV_FILE=./config/ktor.env
+ENV_FILE=./config/spring-mvc-16k.env
 docker compose --env-file $ENV_FILE up -d benchmark-target && \
 docker compose --env-file $ENV_FILE build gatling-runner && \
 docker compose --env-file $ENV_FILE up gatling-runner && \
 docker compose --env-file $ENV_FILE down
 ```
 
-OR
+OR run all benchmarks through the scripts
 
 ```bash
 # Run all benchmarks, config available in `./config/`
-sh e2e-gatling-benchmark.sh
+sh all-gatling-benchmarks.sh
 ```
 
-it will generate benchmark result in `./e2e-result/`,
-use the gatling log to trace the benchmark report in `./docker-cache/gatling-runner/build/reports/`.
+it will output all the `gatling-runner` log to `./logs/`
 
-### 3. (Optional) Grafana Dashboard to view application metrics
+### 4. Study the Gatling reports
+
+Use the `./logs/ to trace the benchmark report in `./gatling-reports/`. Hope you would have a
+great understanding on your application!
+
+### (Optional) Grafana Dashboard to view application metrics
 
 1. Un-comment the `prometheus` and `grafana` services in `docker-compose.yaml`
 2. Make sure the application support prometheus, and add job and endpoints in `prometheus.yml`
