@@ -30,6 +30,7 @@ services:
     volumes:
       - ./docker-cache/gatling-runner/.gradle:/usr/src/app/.gradle
       - ./docker-cache/gatling-runner/build:/usr/src/app/build
+      - ./gatling-reports:/usr/src/app/build/reports/gatling
     env_file:
       - ${GATLING_RUNNER_ENV_FILE}
     deploy:
