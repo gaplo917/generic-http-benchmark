@@ -495,3 +495,4 @@ e2e-result
 docker-cache
 **/node_modules
 reports
+upload
