@@ -7,7 +7,7 @@ UPLOAD_DIR="$UPLOAD_PATH/$DATE_TIMESTAMP";
 mkdir -p $DIR;
 mkdir -p $UPLOAD_DIR;
 
-for env in "./config/ktor.env" ; do
+for env in ./config/*.env ; do
   ENV_FILE=$env;
   FILE_NAME="$(basename -s .env $env)";
   RESULT="$DIR/$FILE_NAME.txt";
