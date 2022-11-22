@@ -7,6 +7,7 @@ UPLOAD_DIR="$UPLOAD_PATH/$DATE_TIMESTAMP";
 mkdir -p $DIR;
 mkdir -p $UPLOAD_DIR;
 
+# Run all benchmarks
 for env in ./config/*.env ; do
   ENV_FILE=$env;
   FILE_NAME="$(basename -s .env $env)";
@@ -17,6 +18,7 @@ for env in ./config/*.env ; do
   # Add date
   echo "Benchmark $ENV_FILE at $(date -u)" | tee -a $RESULT;
 
+
   docker compose --env-file $ENV_FILE build && \
   docker compose --env-file $ENV_FILE up -d benchmark-target && \
   docker compose --env-file $ENV_FILE up gatling-runner | tee -a $RESULT && \
@@ -25,5 +27,8 @@ for env in ./config/*.env ; do
   FIRST_PASS="${LINE/gatling-runner  | Please open the following file: file:\/\/\/usr\/src\/app\/build\/reports\/gatling\//}" && \
   FOLDER="${FIRST_PASS/\/index.html/}" && \
   rsync -av --exclude='*.log' "./reports/gatling/$FOLDER/" "./$UPLOAD_DIR/$FILE_NAME";
-
 done
+
+# Upload the result
+docker compose -f docker-compose-cf-upload.yaml up;
+
