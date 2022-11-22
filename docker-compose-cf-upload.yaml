@@ -4,6 +4,6 @@ services:
     image: minio/mc
     volumes:
        - ./upload:/upload
-       - ./minio-upload.sh:/minio-upload.sh
+       - ./cf-upload.sh:/cf-upload.sh
     env_file: cf.secret.env
-    entrypoint: "bash -c 'bash minio-upload.sh'"
+    entrypoint: "bash -c 'bash cf-upload.sh'"
