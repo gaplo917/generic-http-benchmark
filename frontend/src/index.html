@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1440, initial-scale=0.25" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+  </head>
+  <script>
+    async function fetchData() {
+      const data = await fetch('latest.txt').then((it) => it.text())
+      const [folder, ...benchmarks] = data.split(',')
+      const tabs = benchmarks.sort().map((benchmark, index) => ({
+        index,
+        name: benchmark,
+        url: `${folder}/${benchmark}/index.html`,
+      }))
+      return {
+        selectedTab: tabs[0],
+        tabs,
+        selectedHistory: [tabs[0]],
+      }
+    }
+
+    function addToHistoryIfNeeded(history, tab) {
+      if (history.filter((it) => it.index === tab.index).length === 0) {
+        history.push(tab)
+      }
+    }
+  </script>
+  <body>
+    <div
+      style="min-width: 1440px"
+      x-data="{ data: { selectedTab: {}, tabs: [], selectedHistory: [] } }"
+      x-init="data = await fetchData()"
+    >
+      <div class="fixed top-3 left-3 w-1/6 mx-auto">
+        <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
+        <select
+          @change="data.selectedTab = data.tabs[$event.target.selectedIndex];addToHistoryIfNeeded(data.selectedHistory, data.selectedTab)"
+          id="tabs"
+          name="tabs"
+          class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <template x-for="tab in data.tabs" :key="tab.index">
+            <option
+              x-text="tab.name"
+              :selected="data.selectedTab.index === tab.index"
+            ></option>
+          </template>
+        </select>
+      </div>
+      <div class="w-3/4 block" style="margin-left: 16.667%">
+        <nav
+          class="-mb-px flex space-x-8"
+          aria-label="Tabs"
+          style="height: 54px"
+        >
+          <template x-for="tab in data.selectedHistory" :key="tab.index">
+            <a
+              @click="data.selectedTab = tab"
+              href="#"
+              x-text="tab.name"
+              class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg"
+              :class="{
+              'border-indigo-500 text-indigo-600': data.selectedTab.index === tab.index,
+              'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': data.selectedTab.index !== tab.index
+              }"
+              aria-current="page"
+            >
+            </a>
+          </template>
+        </nav>
+      </div>
+      <div class="sm:block w-full">
+        <iframe
+          class="w-full"
+          style="height: calc(100vh - 54px)"
+          :src="data.selectedTab.url"
+        ></iframe>
+      </div>
+    </div>
+  </body>
+</html>

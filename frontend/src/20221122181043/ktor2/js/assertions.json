@@ -1,0 +1,10 @@
+{
+  "simulation": "io.github.gaplo917.gatling.BasicSimulation",
+  "simulationId": "basicsimulation-20221122101107040",
+  "start": 1669111868818,
+  "description": "",
+  "scenarios": ["warmup-0ms-ktor-nio", "0ms-ktor-nio"],
+  "assertions": [
+
+  ]
+}
