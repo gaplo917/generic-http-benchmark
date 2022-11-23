@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.function.Tuples;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -18,9 +17,9 @@ import java.util.concurrent.Executors;
 
 @Controller
 public class NonBlockingIOJavaController {
-  private ExecutorService vtExecutor = Executors.newVirtualThreadPerTaskExecutor();
+  private final ExecutorService vtExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
-  private IOService ioService;
+  private final IOService ioService;
 
   NonBlockingIOJavaController(IOService ioService) {
     this.ioService = ioService;
@@ -32,7 +31,7 @@ public class NonBlockingIOJavaController {
   ) {
     return ioService.nonBlockingIO(ioDelay)
         .flatMap(resp1 -> ioService.dependentNonBlockingIO(ioDelay, resp1))
-        .map(result -> ResponseEntity.ok(result));
+        .map(ResponseEntity::ok);
   }
 
   @RequestMapping("/webflux-nio-reactor-parallel/{ioDelay}")
@@ -42,8 +41,8 @@ public class NonBlockingIOJavaController {
     return Mono.zip(
         ioService.nonBlockingIO(ioDelay),
         ioService.nonBlockingIO(ioDelay),
-        (a, b) -> List.of(a, b)
-    ).map(result -> ResponseEntity.ok(result));
+        List::of
+    ).map(ResponseEntity::ok);
   }
 
   @RequestMapping("/webflux-nio-reactor-structured-concurrency/{ioDelay}")
@@ -57,23 +56,19 @@ public class NonBlockingIOJavaController {
                   .subscribeOn(Schedulers.fromExecutor(vtExecutor))
                   .block();
 
-              final var result = ioService.dependentNonBlockingIO(ioDelay, resp)
+              return ioService.dependentNonBlockingIO(ioDelay, resp)
                   .subscribeOn(Schedulers.fromExecutor(vtExecutor))
                   .block();
-
-              return result;
             });
             // Wait for all threads to finish or the task scope to shut down.
             // This method waits until all threads started in the task scope finish execution
             scope.join();
             scope.throwIfFailed();
             observer.success(future1.resultNow());
-          } catch (ExecutionException e) {
-            observer.error(e);
-          } catch (InterruptedException e) {
+          } catch (ExecutionException | InterruptedException e) {
             observer.error(e);
           }
         }).subscribeOn(Schedulers.fromExecutor(vtExecutor))
-        .map(result -> ResponseEntity.ok(result));
+        .map(ResponseEntity::ok);
   }
 }

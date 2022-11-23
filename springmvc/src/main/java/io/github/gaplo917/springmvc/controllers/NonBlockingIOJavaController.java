@@ -14,8 +14,7 @@ import java.util.concurrent.Future;
 
 @Controller
 public class NonBlockingIOJavaController {
-
-  private IOService ioService;
+  private final IOService ioService;
 
   NonBlockingIOJavaController(IOService ioService) {
     this.ioService = ioService;
@@ -25,7 +24,7 @@ public class NonBlockingIOJavaController {
   public Future<ResponseEntity<List<DummyResponse>>> nonBlockingFutureApi(@PathVariable Long ioDelay) {
     return ioService.nonBlockingIO(ioDelay)
         .thenCompose(resp -> ioService.dependentNonBlockingIO(ioDelay, resp))
-        .thenApply(result -> ResponseEntity.ok(result));
+        .thenApply(ResponseEntity::ok);
   }
 
   // require Spring MVC enabled virtual threads

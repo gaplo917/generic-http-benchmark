@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 @Service
 public class IOService {
-  private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+  private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
   public DummyResponse blockingIO(Long ioDelay) {
     try {

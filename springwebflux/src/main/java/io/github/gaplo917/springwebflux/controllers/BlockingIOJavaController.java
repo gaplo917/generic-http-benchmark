@@ -17,9 +17,9 @@ import java.util.concurrent.Executors;
 
 @Controller
 public class BlockingIOJavaController {
-  private ExecutorService vtExecutor = Executors.newVirtualThreadPerTaskExecutor();
+  private final ExecutorService vtExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
-  private IOService ioService;
+  private final IOService ioService;
 
   BlockingIOJavaController(IOService ioService) {
     this.ioService = ioService;
@@ -42,7 +42,7 @@ public class BlockingIOJavaController {
           final var result = ioService.dependentBlockingIO(ioDelay, resp1);
           observer.success(result);
         }).subscribeOn(Schedulers.fromExecutor(vtExecutor))
-        .map(result -> ResponseEntity.ok(result));
+        .map(ResponseEntity::ok);
   }
 
 
@@ -59,12 +59,10 @@ public class BlockingIOJavaController {
             scope.join();
             scope.throwIfFailed();
             observer.success(List.of(future1.resultNow(), future2.resultNow()));
-          } catch (ExecutionException e) {
-            observer.error(e);
-          } catch (InterruptedException e) {
+          } catch (ExecutionException | InterruptedException e) {
             observer.error(e);
           }
         }).subscribeOn(Schedulers.fromExecutor(vtExecutor))
-        .map(result -> ResponseEntity.ok(result));
+        .map(ResponseEntity::ok);
   }
 }

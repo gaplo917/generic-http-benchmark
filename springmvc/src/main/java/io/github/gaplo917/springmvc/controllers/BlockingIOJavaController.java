@@ -13,8 +13,8 @@ import java.util.concurrent.*;
 
 @Controller
 public class BlockingIOJavaController {
-  private ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
-  private IOService ioService;
+  private final ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
+  private final IOService ioService;
 
   BlockingIOJavaController(IOService ioService) {
     this.ioService = ioService;
@@ -38,7 +38,7 @@ public class BlockingIOJavaController {
           return ioService.dependentBlockingIO(ioDelay, resp1);
         },
         virtualThreadExecutor
-    ).thenApplyAsync(result -> ResponseEntity.<List<DummyResponse>>ok(result));
+    ).thenApplyAsync(ResponseEntity::ok);
   }
 
   // required Spring MVC to work in virtual threads pool
