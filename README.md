@@ -83,7 +83,7 @@ DOCKER_DEFAULT_PLATFORM=linux/arm64/v8 # Mac M1/M2 CPU
 DOCKER_DEFAULT_PLATFORM=linux/amd64 # Intel / AMD CPU
 
 # Run single benchmark (i.e. ktor)
-ENV_FILE=./config/spring-mvc-16k.env
+ENV_FILE=./config/ktor.env
 docker compose --env-file $ENV_FILE build && \
 docker compose --env-file $ENV_FILE up -d benchmark-target && \
 docker compose --env-file $ENV_FILE up gatling-runner && \
@@ -97,12 +97,16 @@ OR run all benchmarks through the scripts
 sh all-gatling-benchmarks.sh
 ```
 
-it will output all the `gatling-runner` log to `./logs/`
+### 3. During the test, Grab a ☕️ or 🍵 and wait.
+
+- `gatling-runner` output all the logs to `./logs/`
+
+- gatling reports available in `./reports/`
 
 ### 4. Study the Gatling reports
 
-Use the `./logs/ to trace the benchmark report in `./reports/`. Hope you would have a
-great understanding on your application!
+Checkout the benchmark report in `./reports/`. Hope you would have a
+great understanding of your applications!
 
 ### (Optional) Grafana Dashboard to view application metrics
 
@@ -118,19 +122,24 @@ Go to http://localhost:3000 to configure the grafana dashboard.
 
 ## Benchmark Environment
 
-(Coming Soon)
+| Configuration  | Description                       |
+|----------------|-----------------------------------|
+| Platform       | x86 Intel                         |
+| Cloud Provider | Digital Ocean                     |
+| CPU            | 8 vCPU (Dedicated, CPU-Optimized) |
+| RAM            | 16GB Memory                       |
+| Disk           | 100GB SSD                         |
+|                |                                   |
 
 ## Benchmark Result
 
-(Coming Soon)
+JMH: In the source codes comment sections
+
+End to End: https://benchmarks.gaplo.tech/index.html
 
 ## Conclusion
 
 (Coming Soon)
-
-## Troubleshooting
-
-WIP
 
 ## Develop Gatling Kotlin Project
 
