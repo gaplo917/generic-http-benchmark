@@ -5,6 +5,7 @@ namespace aspnet6;
 public readonly record struct DummyResponse(
     String? Name, 
     Boolean? IsActive, 
+    Boolean? IsVirtual, 
     int? ThreadGroupActiveCount, 
     int? ThreadGroupCount)
 {
