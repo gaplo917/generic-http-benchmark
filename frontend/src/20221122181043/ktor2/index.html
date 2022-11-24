@@ -36,7 +36,7 @@
       <div class="content">
         <div class="content-header">
           <div class="onglet">
-            BasicSimulation
+            Ktor 2
           </div>
           <div class="sous-menu" id="sousMenu">
             <div class="sous-menu-spacer">
@@ -48,8 +48,8 @@
           <div class="content-in">
             <div class="container-article">
             <div class="article">
-              
-              
+
+
 <div class="schema-container">
 
             <div id="ranges" class="schema ranges">
@@ -164,7 +164,7 @@
         setGlobalMenu();
         setActiveMenu();
         fillStats(pageStats);
-        
+
 Highcharts.setOptions({
   global: { useUTC: false }
 });
@@ -340,7 +340,7 @@ new Highcharts.Chart({
 });
 
 	    $('#container_exceptions').sortable('#container_exceptions');
-    
+
 
 function generateHtmlRow(request, level, index, parent, group) {
     if (request.name == 'All Requests')
@@ -428,7 +428,7 @@ if (lines.index < 30) {
 $('.table-cell-tooltip').popover({trigger:'hover'});
 
 	    $('#container_errors').sortable('#container_errors');
-    
+
 allUsersData.yAxis = 0;
 
 var allUsersChart = new Highcharts.StockChart({
@@ -700,8 +700,8 @@ var responsetimepercentilesovertimeokPercentilesChart = new Highcharts.StockChar
     }
   },
   series: [
-  
-    
+
+
          {
 pointInterval: 1000,
 name: 'min',
@@ -1028,7 +1028,7 @@ tooltip: { yDecimals: 0, ySuffix: '', valueDecimals: 0 }
 ,type: 'area'},
     allUsersData,
 {
-  
+
 type: 'pie',
 name: 'Distribution',
 data: [

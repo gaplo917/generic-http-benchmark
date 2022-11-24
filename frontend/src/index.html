@@ -35,7 +35,6 @@
       x-init="data = await fetchData()"
     >
       <div class="fixed top-3 left-3 w-1/6 mx-auto">
-        <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
         <select
           @change="data.selectedTab = data.tabs[$event.target.selectedIndex];addToHistoryIfNeeded(data.selectedHistory, data.selectedTab)"
           id="tabs"
@@ -73,11 +72,16 @@
         </nav>
       </div>
       <div class="sm:block w-full">
-        <iframe
-          class="w-full"
-          style="height: calc(100vh - 54px)"
-          :src="data.selectedTab.url"
-        ></iframe>
+        <template x-for="tab in data.selectedHistory" :key="tab.index">
+          <iframe
+            class="w-full"
+            style="height: calc(100vh - 54px)"
+            :class="{
+                'hidden': data.selectedTab.index !== tab.index
+              }"
+            :src="tab.url"
+          ></iframe>
+        </template>
       </div>
     </div>
   </body>
