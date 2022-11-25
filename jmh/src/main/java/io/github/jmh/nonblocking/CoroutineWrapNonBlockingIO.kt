@@ -10,14 +10,24 @@ import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.*
 import org.openjdk.jmh.annotations.*
 
-// _000_parallel_no_wrap_callback                             no_compute  3036565.352 ops/s
-// _000_parallel_no_wrap_callback                                compute   262693.354 ops/s
-// _001_parallel_suspendCoroutine_wrap_callback               no_compute  2946727.145 ops/s
-// _001_parallel_suspendCoroutine_wrap_callback                  compute   255792.764 ops/s
-// _002_parallel_suspendCancellableCoroutine_wrap_callback    no_compute  2960560.612 ops/s
-// _002_parallel_suspendCancellableCoroutine_wrap_callback       compute   233261.863 ops/s
-// _003_parallel_suspendCoroutine_global_launch_wrap_callback no_compute  2725982.888 ops/s
-// _003_parallel_suspendCoroutine_global_launch_wrap_callback    compute   267764.468 ops/s
+//_000_parallel_no_wrap_callback                                                    no_compute 3361385.904 ops/s
+//_000_parallel_no_wrap_callback                                                       compute  267815.856 ops/s
+//_001_parallel_suspendCoroutine_unconfined_wrap_callback                           no_compute 3161661.556 ops/s
+//_001_parallel_suspendCoroutine_unconfined_wrap_callback                              compute  236904.180 ops/s
+//_002_parallel_suspendCoroutine_default_wrap_callback                              no_compute  733835.400 ops/s
+//_002_parallel_suspendCoroutine_default_wrap_callback                                 compute  222002.568 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_default_wrap_callback     no_compute  668354.705 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_default_wrap_callback        compute  252305.122 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_empty_wrap_callback       no_compute  661172.315 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_empty_wrap_callback          compute  235977.490 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_io_wrap_callback          no_compute  154332.418 ops/s
+//_003_parallel_suspendCoroutine_unconfined_global_launch_io_wrap_callback             compute  221449.452 ops/s
+//_004_parallel_suspendCoroutine_default_global_launch_empty_wrap_callback          no_compute  760344.249 ops/s
+//_004_parallel_suspendCoroutine_default_global_launch_empty_wrap_callback             compute  187028.634 ops/s
+//_005_parallel_suspendCoroutine_default_global_launch_io_wrap_callback             no_compute  430760.284 ops/s
+//_005_parallel_suspendCoroutine_default_global_launch_io_wrap_callback                compute  131746.980 ops/s
+//_006_parallel_suspendCoroutine_default_global_launch_unconfined_wrap_callback     no_compute  632536.380 ops/s
+//_006_parallel_suspendCoroutine_default_global_launch_unconfined_wrap_callback        compute  219858.591 ops/s
 @State(Scope.Benchmark)
 @OperationsPerInvocation(500_000)
 class CoroutineWrapNonBlockingIO : NonBlockingOps, InvocationBenchmark {
