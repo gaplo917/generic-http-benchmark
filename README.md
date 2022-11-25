@@ -1,4 +1,4 @@
-## Project Status: Under heavy development
+# Project Status: Under heavy development
 
 This project is originally designed for testing the performance of Kotlin Coroutines, Reactor, 
 and cutting edge Java 19 Virtual Threads for my application of KotlinConf 2023 talk (TBC, under evaluation). 
@@ -10,21 +10,22 @@ Check out the interesting result at [https://benchmarks.gaplo.tech](https://benc
 Contributions are welcome. [Rust and C# implementations were contributed by others!](https://github.com/gaplo917/kotlin-coroutine-benchmark/pulls?q=is%3Apr+is%3Aclosed) 
 If you are interested to add your favourite framework in this project, take a look on their PRs for reference.
 
-| Goal                                                       | Description                                                                                                                             |
-|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| ✅ JMH microbenchmark for JVM                               | Compare asynchronous solutions (Kotlin Coroutine, Reactor, and Java 19 Virtual Threads) in nano-seconds level                           |
-| ✅ [Gatling](https://gatling.io/) End-to-End HTTP benchmark | Utilizing [Gatling](https://gatling.io/) to generate real-world HTTP load and output fruitful performance report                        |
-| ✅ Fully Containerized (Zero Dependencies)                  | Single `docker compose` dependency is enough to get started. Say good bye to countless installations of project dependencies.           |
-| ✅ Scalable Design                                          | Adding a new benchmark target only needs a Dockerfile and a simple configuration.                                                       |
-| ✅ Dev-Friendly Design                                      | Run the benchmark in **your local** machine instead of trusting the report online. Easy to make code changes to run to learn.           |
-| ✅ Zero Code Configuration (similar to `ab` / `wrk`)        | Kotlin implementation of utilizing Gatling to work like `ab` or `wrk` CLI tools                                                         |
-| ✅ High Benchmark Concurrency                               | Thanks for the containerization. Tested 20k+ concurrent users with no problem. No more file description or TCP connection limit issues. |
-| ✅ Continuous Concurrency Ramp Up and Sustain               | Discover the application performance across continuous time series charts with configuration ramp up and sustain duration.              |
-| ✅ Automatically Publish Gatling Reports                    | Automatically parse Gatling output and upload to https://benchmarks.gaplo.tech CDN                                                      |
-| 🔧 GitHub Actions (Automated Provisioning on Cloud)        | Automatically provision machines to run benchmarks                                                                                      |
-| 🔧 GitHub Actions (self-host action runner)                | Create a action runner base image on cloud and provision faster to run benchmarks                                                       |
-| 🔧 All-in-one Benchmark Summary Aggregation                | Aggregate Gatling simulation log to visualize avg. request/s, response time                                                             |
-| 🔧 Implement major features complaint with `ab`            | Support to define http methods, cookies, headers, payload, http connections, custom cert...etc                                          |
+| Goal                                         | Description                                                                                                                             |
+|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| ✅ JMH microbenchmark                         | Compare asynchronous solutions (Kotlin Coroutine, Reactor, and Java 19 Virtual Threads) in nano-seconds level                           |
+| ✅ End-to-End HTTP benchmark                  | Utilizing [Gatling](https://gatling.io/) to generate real-world HTTP load and output fruitful performance report                        |
+| ✅ Fully Containerized                        | Single `docker compose` dependency is enough to get started. Say good bye to countless installations of project dependencies.           |
+| ✅ Scalable Design                            | Adding a new benchmark target only needs a Dockerfile and a simple configuration.                                                       |
+| ✅ Dev-Friendly Design                        | Run the benchmark in **your local** machine instead of trusting the report online. Easy to make code changes to run to learn.           |
+| ✅ Zero Code Configuration                    | Kotlin implementation of utilizing Gatling to work like `ab` or `wrk` CLI tools                                                         |
+| ✅ High Concurrency                           | Thanks for the containerization. Tested 20k+ concurrent users with no problem. No more file description or TCP connection limit issues. |
+| ✅ Continuous Concurrency Ramp Up and Sustain | Discover the application performance across continuous time series charts with configuration ramp up and sustain duration.              |
+| ✅ Gatling Reports Automation                 | Automatically parse Gatling output and upload to https://benchmarks.gaplo.tech CDN                                                      |
+| 🔧 Self-host action runner                   | Create a self-hosted action runner base image on cloud and provision faster to run benchmarks                                           |
+| 🔧 Provisioning Automation                   | Use GitHub Actions to automatically provision a self-hosted action runner to run benchmarks on                                          |
+| 🔧 Report Summary                            | Aggregate all-in-one Gatling simulation log to visualize avg. request/s, response time                                                  |
+| 🔧 More features complaint with `ab`         | Support to define http methods, cookies, headers, payload, http connections, custom cert...etc                                          |
+| ...more                                      |                                                                                                                                         |
 
 | JMH Scenario (Microbenchmark in JVM)         | Goal                                                                                                                         |
 |----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
