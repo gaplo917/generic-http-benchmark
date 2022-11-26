@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=1440, initial-scale=0.25" />
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
   </head>
   <script>
     async function fetchData() {
@@ -28,12 +29,21 @@
       }
     }
   </script>
+  <style>
+    .github-fork-ribbon {
+      position: fixed;
+    }
+    .github-fork-ribbon:before {
+      background-color: #000;
+    }
+  </style>
   <body>
     <div
       style="min-width: 1440px"
       x-data="{ data: { selectedTab: {}, tabs: [], selectedHistory: [] } }"
       x-init="data = await fetchData()"
     >
+      <a class="github-fork-ribbon" href="https://github.com/gaplo917/kotlin-coroutine-benchmark" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
       <div class="fixed top-3 left-3 w-1/6 mx-auto">
         <select
           @change="data.selectedTab = data.tabs[$event.target.selectedIndex];addToHistoryIfNeeded(data.selectedHistory, data.selectedTab)"
