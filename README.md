@@ -1,18 +1,13 @@
-# Project Status: Under heavy development
-
-This project is originally designed for testing the performance of Kotlin Coroutines, Reactor, 
-and cutting edge Java 19 Virtual Threads for my application of KotlinConf 2023 talk (TBC, under evaluation). 
-
-Meanwhile, I realized if my work go the extra miles, it can be further extended to benchmark generic frameworks. 
+# Generic HTTP benchmark
 
 Check out the interesting result at [https://benchmarks.gaplo.tech](https://benchmarks.gaplo.tech).
 
-Contributions are welcome. [Rust and C# implementations were contributed by others!](https://github.com/gaplo917/kotlin-coroutine-benchmark/pulls?q=is%3Apr+is%3Aclosed) 
+Contributions are
+welcome. [Rust and C# implementations were contributed by others!](https://github.com/gaplo917/generic-http-benchmark/pulls?q=is%3Apr+is%3Aclosed)
 If you are interested to add your favourite framework in this project, take a look on their PRs for reference.
 
 | Goal                                         | Description                                                                                                                             |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| ✅ JMH microbenchmark                         | Compare asynchronous solutions (Kotlin Coroutine, Reactor, and Java 19 Virtual Threads) in nano-seconds level                           |
 | ✅ End-to-End HTTP benchmark                  | Utilizing [Gatling](https://gatling.io/) to generate real-world HTTP load and output fruitful performance report                        |
 | ✅ Fully Containerized                        | Single `docker compose` dependency is enough to get started. Say good bye to countless installations of project dependencies.           |
 | ✅ Scalable Design                            | Adding a new benchmark target only needs a Dockerfile and a simple configuration.                                                       |
@@ -27,82 +22,11 @@ If you are interested to add your favourite framework in this project, take a lo
 | 🔧 More features complaint with `ab`         | Support to define http methods, cookies, headers, payload, http connections, custom cert...etc                                          |
 | ...more                                      |                                                                                                                                         |
 
-| JMH Scenario (Microbenchmark in JVM)         | Goal                                                                                                                         |
-|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| ✅ Kotlin Coroutine Dispatcher                | Compare Coroutine Dispatchers w/ and w/o computational workload                                                              |
-| ✅ Reactor Scheduler                          | Compare Rector Schedulers w/ and w/o computational workload                                                                  |
-| ✅ Blocking IO Wrapper                        | Compare Kotlin Coroutine, Reactor, and Java virtual threads as a blocking IO wrapper.                                        |
-| ✅ Non-Blocking IO Wrapper                    | Compare Kotlin Coroutine, Reactor, and Java virtual threads as a non-blocking IO wrapper.                                    |
-| ✅ Coroutine Context Switching                | Compare Kotlin Coroutine context switching w/ and w/o computational workload                                                 |
-| ✅ Diminishing of return of large thread pool | Demonstration of large thread pool is not efficient by wrapping wrapping blocking IO in range of 100 - 4000 a IO thread pool |
-| ✅ Virtual Threads in JDK 19                  | Compare Virtual Threads and Non-Blocking IO performance difference.                                                          |
-| ✅ Structured Concurrency                     | Compare Kotlin Coroutine and JDK 19 structured concurrency feature                                                           |
-
 | Gatling Scenario    | Goal                                                                                                                                                                       |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ✅ Two dependent I/O | Compare various implementations of non-blocking IO or blocking IO  within its HTTP framework. (i.e. Spring w/ Kotlin Coroutine, Reactive Stream, and Java virtual threads) |
 | 🔧 Two parallel I/O | Compare various implementations of non-blocking or blocking IO implementation                                                                                              |
 | ...                 |                                                                                                                                                                            |
-
-
-## KotlinConf2023 (TBC, under evaluation): Deep Dive the Real-World Performance of Kotlin Coroutine (V.S. Reactor, Java Virtual Threads)
-
-As all we know, Kotlin Coroutine has provided us a good way to structure our asynchronous codes
-in a readable sequence. It is also theoretically more CPU-friendly that reduces unnecessary context
-switching to run faster and allow the CPU to work more. However, theory is just the texts on paper,
-developers need real world scenarios and performance metrics to make better decisions.
-
-> When we talk about "Real World Performance", we should measure both **machines** and **developers**.
-
-I believe the following questions popped up in my mind will also in yours:
-
-In machine world,
-
-- How fast is Kotlin Coroutine compared to other popular asynchronous solutions in machine?
-
-- What are the performance differences if I misused Kotlin coroutine?
-
-- What are the performance differences when the application runs heavy-blocking-IO or
-  heavy-non-blocking-IO operations?
-
-- What are the performance differences when I switched to Kotlin Coroutine in Spring Boot MVC?
-
-- Hardware is cheap and eventually will be cheaper in the future, why should I consider Kotlin Coroutine?
-
-In developer world,
-
-- What are the learning curve of writing performant codes in Kotlin Coroutine compared to Java Reactor?
-
-- What changes required to apply Kotlin Coroutine into existing Spring Boot project?
-
-- Java virtual threads and Structured Concurrency feature are coming to future Java, why should I consider Kotlin Coroutine?
-
-This is a technical talk to deep dive the performance differences on Kotlin Coroutine,
-Java virtual threads, and Reactor backed by a list of JMH benchmarks on the JVM to answer those questions.
-
-## Project Goal
-
-This project is to show the performance of using Kotlin Coroutine, Reactor, and
-Java virtual threads on both ideal(JMH) and real world(end-to-end) scenarios.
-
-1. Find out the performance differences between the Reactor and Kotlin Coroutine.
-2. Find out the performance differences when handling blocking IO and non-blocking IO.
-3. Find out the performance differences in the future state of JVM (combined Kotlin Coroutine and Reactor with JDK 19 virtual threads)
-4. Find out the cost of context switching and scheduling in Kotlin Coroutine, Reactor, and java virtual threads.
-5. Compare the JVM-based(ktor, spring boot, vert.x) Http server performances in heavy non-blocking IO
-6. Compare with nodejs, Rust, C#, and more Http server performances in heavy non-blocking IO
-
-## Getting Started (JMH)
-
-Use JMH to run micro-benchmarks on Kotlin Coroutine, Virtual Threads, and Reactor.
-
-```bash
-
-# Run JMH benchmark
-cd jmh;
-./gradlew mainBenchmark;
-
-```
 
 ## Getting Started (end-to-end HTTP benchmark)
 
@@ -178,15 +102,7 @@ Go to http://localhost:3000 to configure the grafana dashboard.
 | Disk           | 100GB SSD                         |
 |                |                                   |
 
-## Benchmark Result (WIP)
-
-JMH: In the source codes comment sections
-
-End to End: https://benchmarks.gaplo.tech/index.html
-
-## Conclusion (WIP)
-
-(Coming Soon)
+Result: https://benchmarks.gaplo.tech/index.html
 
 ## Develop Gatling Kotlin Project
 
@@ -198,8 +114,8 @@ docker compose --env-file $ENV_FILE build gatling-runner
 
 ## Contribution
 
-1. Add new web framework `XXX` implementation that is equivalent to others languages.
-2. Add gatling benchmark configuration in `./config/xxx.env`
+1. Add new web framework `frameworks/xxx` implementation under that is functionally equivalent to other implementations.
+2. Add benchmark configuration in `./config/xxx.env`
 
 ## Troubleshooting
 
@@ -207,3 +123,11 @@ docker compose --env-file $ENV_FILE build gatling-runner
 # Remove orphans containers
 docker compose --env-file ./config/ktor.env down --remove-orphans
 ```
+
+## History
+
+This project is originally designed for testing the performance of Kotlin Coroutines, Reactor,
+and cutting edge Java 19 Virtual Threads on __Spring Boot__ for my application of KotlinConf 2023 talk (Not being
+selected by KotlinConf, [moved in here](https://github.com/gaplo917/coroutine-reactor-virtualthread-microbenchmark)).
+
+Meanwhile, I realized if my work go the extra miles, it can be further extended to benchmark generic frameworks. 

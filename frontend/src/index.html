@@ -43,7 +43,7 @@
       x-data="{ data: { selectedTab: {}, tabs: [], selectedHistory: [] } }"
       x-init="data = await fetchData()"
     >
-      <a class="github-fork-ribbon" href="https://github.com/gaplo917/kotlin-coroutine-benchmark" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+      <a class="github-fork-ribbon" href="https://github.com/gaplo917/generic-http-benchmark" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
       <div class="fixed top-3 left-3 w-1/6 mx-auto">
         <select
           @change="data.selectedTab = data.tabs[$event.target.selectedIndex];addToHistoryIfNeeded(data.selectedHistory, data.selectedTab)"
