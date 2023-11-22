@@ -6,4 +6,4 @@ ENV GRADLE_USER_HOME=".gradle"
 
 COPY . .
 
-CMD ["./gradlew", "-i", "gatlingRun"]
+CMD ["gradle", "-i", "gatlingRun"]

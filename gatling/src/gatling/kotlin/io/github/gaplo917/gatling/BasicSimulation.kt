@@ -22,10 +22,6 @@ class BasicSimulation : Simulation() {
         env("BENCHMARK_REQUEST_TIMEOUT")?.toInt() ?: 30
     }
 
-    private val warmUpDuration by lazy {
-        env("BENCHMARK_WARM_UP_DURATION")?.toLong() ?: 10L
-    }
-
     private val rampUpDuration by lazy {
         env("BENCHMARK_RAMP_UP_DURATION")?.toLong() ?: 10L
     }
@@ -71,21 +67,7 @@ class BasicSimulation : Simulation() {
         name: String,
         endpoint: String,
     ): PopulationBuilder {
-
-        val warmUp = scenario("warmup-$name")
-            .during(5L)
-            .on(
-                exec(
-                    http("warmup-$name").get(endpoint)
-                        .requestTimeout(timeout)
-                        .check(status().`is`(200))
-                )
-            )
-            .injectClosed(
-                rampConcurrentUsers(0).to(peakConcurrencyList.last()).during(warmUpDuration),
-            )
-
-        val actual = scenario(name)
+        return scenario(name)
             .during(5L)
             .on(
                 exec(
@@ -103,9 +85,6 @@ class BasicSimulation : Simulation() {
                     )
                 }.toTypedArray()
             )
-
-        return warmUp
-            .andThen(actual)
     }
 
     init {
