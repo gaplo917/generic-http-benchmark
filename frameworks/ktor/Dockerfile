@@ -1,4 +1,4 @@
-FROM amazoncorretto:19.0.1 AS wrapper
+FROM amazoncorretto:21.0.1 AS wrapper
 
 WORKDIR /usr/src/app
 
@@ -14,7 +14,7 @@ COPY . .
 
 RUN ./gradlew -i shadowJar
 
-FROM amazoncorretto:19.0.1
+FROM amazoncorretto:21.0.1
 
 WORKDIR /usr/src/app
 

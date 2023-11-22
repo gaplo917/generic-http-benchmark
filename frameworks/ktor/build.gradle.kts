@@ -5,9 +5,9 @@ val prometeus_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.7.20"
-    id("io.ktor.plugin") version "2.1.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.21"
+    kotlin("jvm") version "1.9.20"
+    id("io.ktor.plugin") version "2.3.6"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
 }
 
 group = "io.github.gaplo917"
@@ -25,25 +25,24 @@ repositories {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
 }
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("--enable-preview")
-    options.compilerArgs.add("--add-modules=jdk.incubator.concurrent")
-    options.release.set(19)
+    options.release.set(21)
 }
 
 tasks.withType<JavaExec> {
-    environment("JAVA_TOOL_OPTIONS", "--enable-preview --add-modules=jdk.incubator.concurrent")
+    environment("JAVA_TOOL_OPTIONS", "--enable-preview")
 }
 
 dependencies {

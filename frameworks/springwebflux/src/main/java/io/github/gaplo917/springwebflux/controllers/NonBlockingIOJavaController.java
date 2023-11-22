@@ -2,7 +2,6 @@ package io.github.gaplo917.springwebflux.controllers;
 
 import io.github.gaplo917.springwebflux.data.DummyResponse;
 import io.github.gaplo917.springwebflux.services.IOService;
-import jdk.incubator.concurrent.StructuredTaskScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.StructuredTaskScope;
 
 @Controller
 public class NonBlockingIOJavaController {
@@ -64,7 +64,7 @@ public class NonBlockingIOJavaController {
             // This method waits until all threads started in the task scope finish execution
             scope.join();
             scope.throwIfFailed();
-            observer.success(future1.resultNow());
+            observer.success(future1.get());
           } catch (ExecutionException | InterruptedException e) {
             observer.error(e);
           }
