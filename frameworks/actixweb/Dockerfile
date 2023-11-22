@@ -13,7 +13,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release
 
-FROM debian:buster-slim
+FROM rust
 WORKDIR /app
 COPY --from=builder /app/target/release/actixweb .
 CMD ["./actixweb"]
