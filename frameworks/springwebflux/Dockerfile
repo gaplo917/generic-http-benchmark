@@ -8,9 +8,14 @@ COPY gradlew gradlew
 
 COPY gradle.properties gradle.properties
 
-RUN ./gradlew
+COPY build.gradle.kts build.gradle.kts
 
-COPY . .
+COPY settings.gradle.kts settings.gradle.kts
+
+# a hack to cache dependencies
+RUN ./gradlew -i assemble || true
+
+COPY src src
 
 RUN ./gradlew -i bootJar
 
